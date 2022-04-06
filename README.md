@@ -1,6 +1,6 @@
 # DLW PROJECT
 
-Project for Laundry Business. This project uses React Native as its frontend framwork and Firebase as cloud backend. Utilized javascript scripting language and redux/toolkit as state management solution.
+A project for Laundry Business. This project uses React Native as its frontend framework and Firebase as cloud backend. Utilized javascript scripting language and redux/toolkit as state management solution.
 
 ## UI/UX Design
 
@@ -10,6 +10,19 @@ Project for Laundry Business. This project uses React Native as its frontend fra
 ## Getting started in flutter
 
 - [React Navtive Docs](https://reactnative.dev/docs/getting-started)
+
+### Setup requirements
+
+- [Android studio](https://developer.android.com/studio)
+- [Vscode](https://code.visualstudio.com/download)
+- [Nodejs](https://nodejs.org/en/)
+- [React Native Expo](https://docs.expo.dev/)
+
+### Run the program
+
+- Open your vscode in the project root directory.
+- Open a new terminal and type `npm install`.
+- After installing all the packages run the program by typing `expo start`
 
 ## Contributors
 
