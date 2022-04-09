@@ -56,3 +56,4 @@ web-build/
 dist/
 
 .env
+package-lock.json

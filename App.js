@@ -1,29 +1,23 @@
 import React from "react";
 import { Provider } from "react-redux";
-import { configureStore } from "@reduxjs/toolkit";
-import { StyleSheet, SafeAreaView } from "react-native";
-import rootReducer from "./src/redux/reducers";
-
-const store = configureStore({
-  reducer: rootReducer,
-});
+import store from "./src/redux/store";
+import * as eva from "@eva-design/eva";
+import { ApplicationProvider, IconRegistry } from "@ui-kitten/components";
+import AppRoute from "./src/router/app_route";
+import { EvaIconsPack } from "@ui-kitten/eva-icons";
+import FlashMessage from "react-native-flash-message";
+import { LoadingScreen } from "./src/components/common/loading_screen";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function App() {
   return (
     <Provider store={store}>
-      <SafeAreaView style={styles.container}>
-        {/* <Text>Open up App.js to start working on your app!</Text>
-        <StatusBar style="auto" /> */}
-      </SafeAreaView>
+      <IconRegistry icons={EvaIconsPack} />
+      <ApplicationProvider {...eva} theme={eva.light}>
+        <AppRoute />
+        <LoadingScreen />
+        <FlashMessage position="bottom" />
+      </ApplicationProvider>
     </Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});

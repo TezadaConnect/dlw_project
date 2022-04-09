@@ -3,8 +3,13 @@
     "name": "dlw_project",
     "slug": "dlw_project",
     "version": "1.0.0",
-    "assetBundlePatterns": [
-      "**/*"
-    ]
+    "assetBundlePatterns": ["**/*"],
+    "web": {
+      "build": {
+        "babel": {
+          "include": ["@ui-kitten/components"]
+        }
+      }
+    }
   }
 }
