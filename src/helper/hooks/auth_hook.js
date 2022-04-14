@@ -1,3 +1,4 @@
+import { async } from "@firebase/util";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect } from "react";
 import { showMessage } from "react-native-flash-message";
@@ -95,7 +96,52 @@ const useAuthHook = () => {
     }, [user]);
   };
 
-  return { login, signup, logout, checkUser };
+  const checkAgreement = () => {
+    useEffect(async () => {
+      dispatch(setBusy(true));
+      await AuthService.readAgreement(user.id)
+        .then((res) => {
+          console.log(res);
+          if (res === false) {
+            next.reset({ index: 0, routes: [{ name: "Terms" }] });
+          }
+        })
+        .catch((err) => {
+          showMessage({
+            message: "Action Denied",
+            description: err.message,
+            type: "danger",
+            icon: "danger",
+          });
+        });
+      dispatch(setBusy(false));
+    }, []);
+  };
+
+  const agreedToTerms = async () => {
+    if (user !== null) {
+      await AuthService.modifyAgreement(user.id)
+        .then(() => {
+          showMessage({
+            message: "Welcome",
+            description: "Agreed to terms and agreement",
+            type: "success",
+            icon: "success",
+          });
+          next.reset({ index: 0, routes: [{ name: "Home" }] });
+        })
+        .catch((err) => {
+          showMessage({
+            message: "Action Denied",
+            description: err.message,
+            type: "danger",
+            icon: "danger",
+          });
+        });
+    }
+  };
+
+  return { login, signup, logout, checkUser, checkAgreement, agreedToTerms };
 };
 
 export default useAuthHook;

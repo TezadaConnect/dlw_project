@@ -9,6 +9,11 @@ import RegisterView from "../view/auth/register_view";
 import HomeView from "../view/home_view";
 import { authentication } from "../config/firebase_config";
 import { setBusy } from "../redux/slices/response_slice";
+import TermsView from "../view/terms_view";
+import NoticeView from "../view/notice_view";
+import NotificationView from "../view/notification_view";
+import AcquireView from "../view/acquire_view";
+import StatusView from "../view/status_view";
 
 const Stack = createNativeStackNavigator();
 
@@ -48,6 +53,11 @@ const AppRoute = () => {
           <Stack.Screen name="Login" component={LoginView} />
           <Stack.Screen name="Register" component={RegisterView} />
           <Stack.Screen name="Home" component={HomeView} />
+          <Stack.Screen name="Terms" component={TermsView} />
+          <Stack.Screen name="Notification" component={NotificationView} />
+          <Stack.Screen name="Acquire" component={AcquireView} />
+          <Stack.Screen name="Status" component={StatusView} />
+          <Stack.Screen name="Notice" component={NoticeView} />
         </Stack.Navigator>
       </NavigationContainer>
     </React.Fragment>

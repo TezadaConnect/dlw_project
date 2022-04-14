@@ -2,13 +2,7 @@ import { Input, Layout, Text } from "@ui-kitten/components";
 import { StyleSheet } from "react-native";
 import React from "react";
 
-export const TextField = ({
-  label,
-  isPass = false,
-  placeholder,
-  name,
-  formik,
-}) => {
+export const TextField = ({ label, isPass = false, placeholder, name, formik }) => {
   const { handleChange, values, errors, touched } = formik;
   return (
     <Layout style={style.input}>
@@ -42,6 +36,6 @@ const style = StyleSheet.create({
     marginBottom: 15,
   },
   errorColor: {
-    color: "red",
+    color: "#C80048",
   },
 });

@@ -2,11 +2,21 @@ import { Card, Icon, Layout, Text } from "@ui-kitten/components";
 import { StyleSheet } from "react-native";
 import React from "react";
 
-export const ProductCardComponent = () => {
+export const ProductCardComponent = ({ title, imgUrl }) => {
   return (
     <React.Fragment>
       <Card style={style.cardProdLayout}>
-        <Text>Lorem ipsum card</Text>
+        <Layout
+          style={{
+            backgroundColor: "transparent",
+            height: "100%",
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ fontWeight: "bold" }}>{title ?? "Hand Wash Service"}</Text>
+        </Layout>
       </Card>
     </React.Fragment>
   );
@@ -25,11 +35,7 @@ export const TopProductCardComponent = () => {
           }}
         >
           <Text style={{ fontWeight: "bold" }}>{1}. Lorem ipsum card</Text>
-          <Icon
-            style={{ width: 20, height: 20 }}
-            fill="#8F9BB3"
-            name="arrow-ios-forward-outline"
-          />
+          <Icon style={{ width: 20, height: 20 }} fill="#8F9BB3" name="arrow-ios-forward-outline" />
         </Layout>
       </Card>
     </React.Fragment>

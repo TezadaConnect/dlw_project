@@ -11,21 +11,16 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 
 import useAuthHook from "../../helper/hooks/auth_hook";
-import FlashMessage from "react-native-flash-message";
 
 const LoginView = () => {
   const next = useNavigation();
   const { login, checkUser } = useAuthHook();
 
-  const [showAlert, setAlert] = useState(false);
-
   const loginForm = useFormik({
     enableReinitialize: true,
     initialValues: { email: "", password: "" },
     validationSchema: Yup.object({
-      email: Yup.string()
-        .required("This field is required")
-        .email("Must be a valid email"),
+      email: Yup.string().required("This field is required").email("Must be a valid email"),
       password: Yup.string().required("This field is required"),
     }),
     onSubmit: async (values) => {
@@ -38,32 +33,15 @@ const LoginView = () => {
   return (
     <SafeAreaView>
       <Layout style={layouts.screen}>
-        <TopNavigation
-          title={() => <Text category="h6">Login your Account</Text>}
-        />
+        <TopNavigation title={() => <Text category="h6">Login your Account</Text>} />
 
         <Layout style={layouts.padding}>
           <Layout style={style.imgLayout}>
-            <Image
-              source={require("../../../assets/img/logo.png")}
-              resizeMode="contain"
-              style={style.imgStyle}
-            />
+            <Image source={require("../../../assets/img/logo.png")} resizeMode="contain" style={style.imgStyle} />
           </Layout>
 
-          <TextField
-            name="email"
-            label="Email"
-            placeholder="email"
-            formik={loginForm}
-          />
-          <TextField
-            name="password"
-            label="Password"
-            placeholder="password"
-            isPass={true}
-            formik={loginForm}
-          />
+          <TextField name="email" label="Email" placeholder="email" formik={loginForm} />
+          <TextField name="password" label="Password" placeholder="password" isPass={true} formik={loginForm} />
         </Layout>
 
         <Layout style={layouts.padding}>

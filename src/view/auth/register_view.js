@@ -1,12 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import {
-  TopNavigation,
-  Text,
-  Icon,
-  TopNavigationAction,
-  Layout,
-  Button,
-} from "@ui-kitten/components";
+import { TopNavigation, Text, Icon, TopNavigationAction, Layout, Button } from "@ui-kitten/components";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native";
@@ -26,12 +19,9 @@ const RegisterView = () => {
       fname: "",
       lname: "",
       c_password: "",
-      role: "client",
     },
     validationSchema: Yup.object({
-      email: Yup.string()
-        .required("This field is required")
-        .email("Must be a valid email"),
+      email: Yup.string().required("This field is required").email("Must be a valid email"),
       password: Yup.string().required("This field is required"),
       fname: Yup.string().required("This field is required"),
       lname: Yup.string().required("This field is required"),
@@ -48,38 +38,14 @@ const RegisterView = () => {
     <SafeAreaView>
       <Layout style={layouts.screen}>
         <Layout>
-          <TopNavigation
-            accessoryLeft={BackAction}
-            title={() => <Text category="h6">Create an Account</Text>}
-          />
+          <TopNavigation accessoryLeft={BackAction} title={() => <Text category="h6">Create an Account</Text>} />
 
           <Layout style={style.textFieldLayout}>
-            <TextField
-              name="fname"
-              label="First Name"
-              placeholder="first name"
-              formik={signupForm}
-            />
-            <TextField
-              name="lname"
-              label="Last Name"
-              placeholder="last name"
-              formik={signupForm}
-            />
-            <TextField
-              name="email"
-              label="Email"
-              placeholder="email"
-              formik={signupForm}
-            />
+            <TextField name="fname" label="First Name" placeholder="first name" formik={signupForm} />
+            <TextField name="lname" label="Last Name" placeholder="last name" formik={signupForm} />
+            <TextField name="email" label="Email" placeholder="email" formik={signupForm} />
 
-            <TextField
-              name="password"
-              label="Password"
-              placeholder="password"
-              isPass={true}
-              formik={signupForm}
-            />
+            <TextField name="password" label="Password" placeholder="password" isPass={true} formik={signupForm} />
             <TextField
               name="c_password"
               label="Confirm Password"

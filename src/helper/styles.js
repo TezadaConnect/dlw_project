@@ -11,4 +11,8 @@ export const layouts = StyleSheet.create({
   padding: {
     padding: 15,
   },
+
+  errColor: {
+    color: "red",
+  },
 });
