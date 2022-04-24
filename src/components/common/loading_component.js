@@ -4,8 +4,13 @@ import ReactLoading from "react-loading";
 const LoadingComponent = () => {
   return (
     <React.Fragment>
-      <div className="bg-loading-transparent w-screen h-screen flex justify-center items-center">
-        <ReactLoading type={"spinningBubbles"} color={"black"} height={40} width={40} />
+      <div className="bg-opacity-10 bg-black w-full h-full flex justify-center items-center fixed top-0">
+        <ReactLoading
+          type={"spinningBubbles"}
+          color={"black"}
+          height={50}
+          width={50}
+        />
       </div>
     </React.Fragment>
   );
