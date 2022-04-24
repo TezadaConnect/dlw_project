@@ -129,7 +129,10 @@ const TableView = () => {
     []
   );
 
-  const data = useMemo(() => ITEMS, []);
+  const data = useMemo(
+    () => ITEMS, // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   return (
     <React.Fragment>
