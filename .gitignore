@@ -57,4 +57,4 @@ dist/
 
 .env
 package-lock.json
-src/config/firebase_config.js
+# src/config/firebase_config.js

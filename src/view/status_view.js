@@ -6,8 +6,11 @@ import { layouts } from "../helper/styles";
 import { PulseIndicator } from "react-native-indicators";
 import CountDown from "react-native-countdown-component";
 import { showMessage } from "react-native-flash-message";
+import useAuthHook from "../helper/hooks/auth_hook";
+
 const StatusView = () => {
   const [counter, setCounter] = useState(0);
+  const { logout } = useAuthHook();
   const [title, setTitle] = useState("Waiting for response");
   const colorValue = {
     indi1: counter >= 0 ? "#2ecc71" : "#d68f98",
@@ -37,29 +40,83 @@ const StatusView = () => {
     <SafeAreaView>
       <Layout style={layouts.screen}>
         <Layout>
-          <TopNavigation title={() => <Text category="h6">Service Status</Text>} />
+          <TopNavigation
+            title={() => <Text category="h6">Service Status</Text>}
+          />
           <Layout style={{ marginTop: 80 }}>
-            <Text style={{ textAlign: "center", fontWeight: "bold" }} category="h6">
+            <Text
+              style={{ textAlign: "center", fontWeight: "bold" }}
+              category="h6"
+            >
               {title}...
             </Text>
             <Layout style={style.progressLayout}>
-              <Layout style={{ backgroundColor: colorValue.indi1, ...style.dotLayout }}>
+              <Layout
+                style={{
+                  backgroundColor: colorValue.indi1,
+                  ...style.dotLayout,
+                }}
+              >
                 {counter === 0 ? <PulseIndicator color="#2ecc71" /> : null}
               </Layout>
-              <Layout style={{ flexGrow: 1, height: 5, backgroundColor: colorLineValue.indi2 }}></Layout>
-              <Layout style={{ backgroundColor: colorValue.indi2, ...style.dotLayout }}>
+              <Layout
+                style={{
+                  flexGrow: 1,
+                  height: 5,
+                  backgroundColor: colorLineValue.indi2,
+                }}
+              ></Layout>
+              <Layout
+                style={{
+                  backgroundColor: colorValue.indi2,
+                  ...style.dotLayout,
+                }}
+              >
                 {counter === 1 ? <PulseIndicator color="#2ecc71" /> : null}
               </Layout>
-              <Layout style={{ flexGrow: 1, height: 5, backgroundColor: colorLineValue.indi3 }}></Layout>
-              <Layout style={{ backgroundColor: colorValue.indi3, ...style.dotLayout }}>
+              <Layout
+                style={{
+                  flexGrow: 1,
+                  height: 5,
+                  backgroundColor: colorLineValue.indi3,
+                }}
+              ></Layout>
+              <Layout
+                style={{
+                  backgroundColor: colorValue.indi3,
+                  ...style.dotLayout,
+                }}
+              >
                 {counter === 2 ? <PulseIndicator color="#2ecc71" /> : null}
               </Layout>
-              <Layout style={{ flexGrow: 1, height: 5, backgroundColor: colorLineValue.indi4 }}></Layout>
-              <Layout style={{ backgroundColor: colorValue.indi4, ...style.dotLayout }}>
+              <Layout
+                style={{
+                  flexGrow: 1,
+                  height: 5,
+                  backgroundColor: colorLineValue.indi4,
+                }}
+              ></Layout>
+              <Layout
+                style={{
+                  backgroundColor: colorValue.indi4,
+                  ...style.dotLayout,
+                }}
+              >
                 {counter === 3 ? <PulseIndicator color="#2ecc71" /> : null}
               </Layout>
-              <Layout style={{ flexGrow: 1, height: 5, backgroundColor: colorLineValue.indi5 }}></Layout>
-              <Layout style={{ backgroundColor: colorValue.indi5, ...style.dotLayout }}>
+              <Layout
+                style={{
+                  flexGrow: 1,
+                  height: 5,
+                  backgroundColor: colorLineValue.indi5,
+                }}
+              ></Layout>
+              <Layout
+                style={{
+                  backgroundColor: colorValue.indi5,
+                  ...style.dotLayout,
+                }}
+              >
                 {counter === 4 ? <PulseIndicator color="#2ecc71" /> : null}
               </Layout>
             </Layout>
@@ -69,7 +126,12 @@ const StatusView = () => {
               until={20}
               onFinish={() => {
                 setCounter(4);
-                showMessage({ message: "Service done!", icon: "success", type: "success" });
+                showMessage({
+                  message: "Service done!",
+                  icon: "success",
+                  type: "success",
+                });
+                logout();
               }}
               // onPress={() => alert("hello")}
               onChange={(e) => {

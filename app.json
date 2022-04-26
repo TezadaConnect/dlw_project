@@ -3,7 +3,6 @@
   "displayName": "DLW PROJECT",
   "expo": {
     "name": "DWL PROJECT",
-    "icon": "./src/assets/img/logo.png",
     "version": "1.0.0",
     "slug": "dlw-project",
     "assetBundlePatterns": ["**/*"],
@@ -13,10 +12,6 @@
           "include": ["@ui-kitten/components"]
         }
       }
-    },
-    "ios": {
-      "bundleIdentifier": "com.dlw.dlw_project",
-      "buildNumber": "1.0.0"
     },
     "android": {
       "package": "com.dlw.dlw_project",
