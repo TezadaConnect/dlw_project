@@ -21,6 +21,7 @@
     "expo": "~44.0.2",
     "expo-splash-screen": "~0.14.1",
     "expo-status-bar": "~1.2.0",
+    "expo-updates": "^0.11.6",
     "firebase": "^9.6.10",
     "formik": "^2.2.9",
     "react": "17.0.1",
