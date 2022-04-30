@@ -1,6 +1,6 @@
 # DLW PROJECT
 
-A project for Laundry Business. This project uses React Native as its frontend framework and Firebase as cloud backend. Utilized javascript scripting language, redux/toolkit as state management solution, and UI Kitten for awesome ui components.
+A project for Laundry Business. This project uses React as its frontend framework and Firebase as cloud backend. Utilized javascript scripting language, redux/toolkit as state management solution, and Tailwind css as its css framework.
 
 ## UI/UX Design
 
@@ -9,20 +9,18 @@ A project for Laundry Business. This project uses React Native as its frontend f
 
 ## Getting started in React Native
 
-- [React Navtive Docs](https://reactnative.dev/docs/getting-started)
+- [ReactJs Docs](https://reactjs.org/docs/getting-started.html)
 
 ### Setup requirements
 
-- [Android studio](https://developer.android.com/studio)
 - [Vscode](https://code.visualstudio.com/download)
 - [Nodejs](https://nodejs.org/en/)
-- [React Native Expo](https://docs.expo.dev/)
 
 ### Run the program
 
 - Open your vscode in the project root directory.
 - Open a new terminal and type `npm install`.
-- After installing all the packages run the program by typing `expo start`
+- After installing all the packages run the program by typing `npm start`
 
 ## Contributors
 
