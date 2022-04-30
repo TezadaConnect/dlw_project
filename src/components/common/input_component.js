@@ -7,7 +7,7 @@ export const InputComponent = ({
   formik,
   type = "",
 }) => {
-  const { handleChange, errors, touched } = formik;
+  const { values, handleChange, errors, touched } = formik;
   return (
     <React.Fragment>
       <div className="mb-3 w-full flex flex-col items-start object-contain">
@@ -16,6 +16,7 @@ export const InputComponent = ({
         </label>
         <input
           type={type}
+          value={values[name]}
           className="appearance-none p-3 bg-gray-100 box-border border border-gray-300 rounded focus:outline-none focus:border-gray-600 object-contain w-full"
           id={name}
           placeholder={placeholder ?? "label"}
@@ -31,20 +32,21 @@ export const InputComponent = ({
 };
 
 export const TextAreaComponent = ({ placeholder, name, label, formik }) => {
-  const { handleChange, errors, touched } = formik;
+  const { values, handleChange, errors, touched } = formik;
   return (
     <React.Fragment>
       <div className="mb-3 w-full flex flex-col items-start object-contain">
         <label htmlFor={name}>{label ?? "Label"}</label>
         <textarea
           id={name}
+          value={values[name]}
           className="appearance-none p-3 bg-gray-100 box-border border border-gray-300 rounded focus:outline-none focus:border-gray-600 object-contain w-full"
           placeholder={placeholder ?? "label"}
           name={name ?? "label"}
           onChange={handleChange}
         />
         {touched[name] && errors[name] ? (
-          <span className="text-red-500">{errors[name]}</span>
+          <span className="text-red-500 text-sm">{errors[name]}</span>
         ) : null}
       </div>
     </React.Fragment>
@@ -58,7 +60,7 @@ export const SelectComponent = ({
   label,
   formik,
 }) => {
-  const { handleChange, errors, touched } = formik;
+  const { values, handleChange, errors, touched } = formik;
   return (
     <React.Fragment>
       <div className="mb-3 w-full flex flex-col items-start object-contain">
@@ -67,6 +69,7 @@ export const SelectComponent = ({
         </label>
         <select
           name={name}
+          value={values[name]}
           onChange={handleChange}
           className="appearance-none p-3 bg-gray-100 box-border border border-gray-300 rounded focus:outline-none focus:border-gray-600 object-contain w-full"
         >

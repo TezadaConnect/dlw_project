@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaMoneyBill } from "react-icons/fa";
 import { MdLocalLaundryService } from "react-icons/md";
 import Swal from "sweetalert2";
@@ -10,10 +10,10 @@ import {
   DisplayManagementCard,
   GraphDisplay,
   ProductServiceCard,
-  PRODUCT_ITEM,
 } from "../components/management_component";
-
+import { query, onSnapshot } from "@firebase/firestore";
 import CreateServiceModal from "../components/modals/create_service_modal";
+import { PRODUCT_QUERY } from "../services/product_service";
 
 const MySwal = withReactContent(Swal);
 
@@ -33,6 +33,22 @@ const sidebarItems = [
 const ManagementView = () => {
   const [page, setPage] = useState(1);
 
+  const [product, setProduct] = useState([]);
+
+  useEffect(() => {
+    const unSub = onSnapshot(query(PRODUCT_QUERY), (snap) => {
+      const collection = [];
+      snap.forEach((doc) => {
+        collection.push({
+          id: doc.id,
+          data: doc.data(),
+        });
+      });
+      setProduct(collection);
+    });
+    return unSub;
+  }, []);
+
   return (
     <React.Fragment>
       <div className="flex flex-row">
@@ -43,7 +59,7 @@ const ManagementView = () => {
           <NavbarComponent title="MANAGEMENT" />
           <div className="mt-5 mx-5">
             {page === 1 && <CashFlowDisplay />}
-            {page === 2 && <ProductServices />}
+            {page === 2 && <ProductServices product={product} />}
           </div>
         </div>
       </div>
@@ -70,11 +86,11 @@ const CashFlowDisplay = () => {
   );
 };
 
-const ProductServices = () => {
+const ProductServices = ({ product }) => {
   return (
     <React.Fragment>
       <div className="object-contain flex flex-row justify-between items-center">
-        <p className="text-xl text-gray-500 font-bold">ALL ACCOUNTS</p>
+        <p className="text-xl text-gray-500 font-bold">ALL SERVICES</p>
         <button
           onClick={() => createNewProduct()}
           className="px-5 py-3 rounded bg-black text-white hover:bg-gray-900 active:translate-y-1"
@@ -83,7 +99,7 @@ const ProductServices = () => {
         </button>
       </div>
       <div className="w-full grid grid-cols-5 gap-3">
-        {PRODUCT_ITEM.map((element, key) => {
+        {product?.map((element, key) => {
           return <ProductServiceCard key={key} item={element} />;
         })}
       </div>

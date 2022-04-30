@@ -1,23 +1,29 @@
 import { useFormik } from "formik";
-import React from "react";
-import Swal from "sweetalert2";
+import React, { useState } from "react";
 import { InputComponent, SelectComponent } from "../common/input_component";
 import * as Yup from "yup";
-import { roleSelect } from "../../helpers/constant";
+import { creationTypeEnum, roleSelect } from "../../helpers/constant";
+import axios from "axios";
+import { API_HOST } from "../../config/api_config";
+import ReactLoading from "react-loading";
+import { errorPopup, successPopup } from "../common/response_component";
 
 const validationStandard = Yup.string().required("This field is required");
-const validationNumber = Yup.number()
-  .typeError("Must be a number")
-  .required("This field is required");
+const validationCpassword = Yup.string()
+  .required("This field is required")
+  .oneOf([Yup.ref("password"), null], "Passwords must match");
 
-const CreateUserModal = () => {
+const CreateUserModal = ({ type = creationTypeEnum.new, user = null }) => {
+  const [loading, setBusy] = useState(false);
+
   const requestForm = useFormik({
     enableReinitialize: true,
     initialValues: {
-      email: "",
-      role: "",
-      fname: "",
-      lname: "",
+      email: user?.email ?? "",
+      role: user?.role ?? "",
+      fname: user?.fname ?? "",
+      lname: user?.lname ?? "",
+      userId: user?.id ?? "",
       password: "",
       c_password: "",
     },
@@ -27,22 +33,53 @@ const CreateUserModal = () => {
         .required("This field is required"),
       role: validationStandard,
       fname: validationStandard,
-      lname: validationNumber,
-      password: validationStandard,
-      c_password: Yup.string()
-        .required("This field is required")
-        .oneOf([Yup.ref("password"), null], "Passwords must match"),
+      lname: validationStandard,
+      password:
+        type !== creationTypeEnum.update ? validationStandard : Yup.string(),
+      c_password:
+        type !== creationTypeEnum.update ? validationCpassword : Yup.string(),
     }),
-    onSubmit: (values) => {
-      Swal.close();
+    onSubmit: async (values) => {
+      setBusy(true);
+      if (type === creationTypeEnum.new) {
+        return await axios
+          .post(API_HOST + "add-user", values, {
+            withCredentials: true,
+          })
+          .then(() => successPopup("Created New Account"))
+          .catch((err) => errorPopup(err.message));
+      }
+      await axios
+        .post(API_HOST + "update-user", values, {
+          withCredentials: true,
+        })
+        .then(() => successPopup("Updateded Successfully"))
+        .catch((err) => errorPopup(err.message));
     },
   });
+
+  if (loading) {
+    return (
+      <React.Fragment>
+        <div className="mx-auto my-5 flex justify-center items-center">
+          <ReactLoading
+            type={"spinningBubbles"}
+            color={"black"}
+            height={50}
+            width={50}
+          />
+        </div>
+      </React.Fragment>
+    );
+  }
 
   return (
     <React.Fragment>
       <div className="flex flex-col w-full">
         <h1 className="text-left my-5 font-bold text-3xl text-black">
-          Create a New Account
+          {type === creationTypeEnum.new
+            ? "Create a New Account"
+            : "Edit Profile"}
         </h1>
 
         <InputComponent
@@ -74,21 +111,25 @@ const CreateUserModal = () => {
           formik={requestForm}
         />
 
-        <InputComponent
-          name="password"
-          label="Password"
-          placeholder="password"
-          type="password"
-          formik={requestForm}
-        />
+        {type !== creationTypeEnum.update && (
+          <InputComponent
+            name="password"
+            label="Password"
+            placeholder="password"
+            type="password"
+            formik={requestForm}
+          />
+        )}
 
-        <InputComponent
-          name="c_password"
-          label="Confirm Password"
-          placeholder="confirm password"
-          type="password"
-          formik={requestForm}
-        />
+        {type !== creationTypeEnum.update && (
+          <InputComponent
+            name="c_password"
+            label="Confirm Password"
+            placeholder="confirm password"
+            type="password"
+            formik={requestForm}
+          />
+        )}
 
         <button
           onClick={requestForm.handleSubmit}

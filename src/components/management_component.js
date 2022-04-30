@@ -15,6 +15,7 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import CreateServiceModal from "./modals/create_service_modal";
 import { creationTypeEnum } from "../helpers/constant";
+import ProductService from "../services/product_service";
 
 const MySwal = withReactContent(Swal);
 
@@ -151,16 +152,17 @@ export const PRODUCT_ITEM = [
 export const ProductServiceCard = ({ item }) => {
   return (
     <React.Fragment>
-      <div>
-        <div
-          className="shadow-md border rounded cursor-pointer transition delay-75 hover:scale-105"
-          onClick={() => editServiceModal(item?.id)}
-        >
+      <div onClick={() => editServiceModal(item?.id, item?.data?.img_path)}>
+        <div className="shadow-md border rounded cursor-pointer transition delay-75 hover:scale-105">
           <div>
-            <img src={item.img} alt={item?.alt} className="object-contain" />
+            <img
+              src={item?.data?.img_url}
+              alt={item?.data?.alt_url}
+              className="object-contain"
+            />
           </div>
           <div className=" py-4 font-bold text-2xl text-center">
-            {item.name}
+            {item?.data?.service_name}
           </div>
         </div>
       </div>
@@ -168,7 +170,7 @@ export const ProductServiceCard = ({ item }) => {
   );
 };
 
-const editServiceModal = ({ id }) => {
+const editServiceModal = (id, path) => {
   MySwal.fire({
     title: "Wash Only Service",
     color: "black",
@@ -181,13 +183,16 @@ const editServiceModal = ({ id }) => {
       Swal.close();
       MySwal.fire({
         width: 700,
-        html: <CreateServiceModal type={creationTypeEnum.update} />,
+        html: (
+          <CreateServiceModal prod_id={id} type={creationTypeEnum.update} />
+        ),
         showConfirmButton: false,
         showCloseButton: true,
       });
     },
     preDeny: () => {
       Swal.close();
+      ProductService.deleteProduct(id, path);
       MySwal.fire({
         icon: "success",
         title: "Delete Succesfully",

@@ -6,7 +6,8 @@ import { getStorage } from "@firebase/storage";
 const firebaseConfig = {
   apiKey: "AIzaSyAAs7fULp189ScZe1efX-tBSEyV457FFqQ",
   authDomain: "dlw-backend.firebaseapp.com",
-  databaseURL: "https://dlw-backend-default-rtdb.asia-southeast1.firebasedatabase.app",
+  databaseURL:
+    "https://dlw-backend-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "dlw-backend",
   storageBucket: "dlw-backend.appspot.com",
   messagingSenderId: "103837617836",

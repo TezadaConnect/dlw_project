@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { MdAccountCircle } from "react-icons/md";
 import { useTable } from "react-table/dist/react-table.development";
 import NavbarComponent from "../components/common/navbar_component";
@@ -7,8 +7,13 @@ import { BsPencilFill } from "react-icons/bs";
 import { FaKey, FaTrash } from "react-icons/fa";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
-import UpdateUserModal from "../components/modals/update_user_modal";
 import CreateUserModal from "../components/modals/create_user_modal";
+import { query, onSnapshot } from "@firebase/firestore";
+import { USERS_QUERY } from "../services/auth_service";
+import axios from "axios";
+import { API_HOST } from "../config/api_config";
+import { creationTypeEnum } from "../helpers/constant";
+import ResetPasswordModal from "../components/modals/reset_pass_modal";
 
 const MySwal = withReactContent(Swal);
 
@@ -52,22 +57,7 @@ const AdminView = () => {
 export default AdminView;
 
 const TableView = () => {
-  const ITEMS = [
-    {
-      id: "1",
-      email: "tezada@gmail.com",
-      fname: "Terrence",
-      lname: "Calzada",
-      role: "admin",
-    },
-    {
-      id: "2",
-      email: "tezada@gmail.com",
-      fname: "Terrence",
-      lname: "Calzada",
-      role: "admin",
-    },
-  ];
+  const [accounts, setAccounts] = useState([]);
 
   const columns = useMemo(
     () => [
@@ -101,7 +91,10 @@ const TableView = () => {
                 <BsPencilFill
                   size={20}
                   onClick={() => {
-                    editAccountModal(cell.row.values.id);
+                    createAccountModal(
+                      creationTypeEnum.update,
+                      cell.row.values
+                    );
                   }}
                 />
               </div>
@@ -113,11 +106,12 @@ const TableView = () => {
                   }}
                 />
               </div>
+
               <div className="active:translate-y-1 transition delay-75 hover:text-red-600">
                 <FaKey
                   size={20}
                   onClick={() => {
-                    changePasswordPopup(cell.row.values.id);
+                    updatePassword(cell.row.values);
                   }}
                 />
               </div>
@@ -130,9 +124,21 @@ const TableView = () => {
   );
 
   const data = useMemo(
-    () => ITEMS, // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    () => accounts, // eslint-disable-next-line react-hooks/exhaustive-deps
+    [accounts]
   );
+
+  useEffect(() => {
+    const unSub = onSnapshot(query(USERS_QUERY), (snap) => {
+      const collection = [];
+      snap.forEach((doc) => {
+        collection.push({ id: doc.id, ...doc.data() });
+      });
+      setAccounts(collection);
+    });
+
+    return unSub;
+  }, []);
 
   return (
     <React.Fragment>
@@ -184,42 +190,38 @@ const AccountsTable = ({ columns, data }) => {
   );
 };
 
-const editAccountModal = ({ id }) => {
+const createAccountModal = (creation, user) => {
   MySwal.fire({
-    html: <UpdateUserModal id={id} />,
+    html: <CreateUserModal type={creation} user={user} />,
     width: 700,
     showConfirmButton: false,
     showCloseButton: true,
   });
 };
 
-const createAccountModal = () => {
-  MySwal.fire({
-    html: <CreateUserModal />,
-    width: 700,
-    showConfirmButton: false,
-    showCloseButton: true,
-  });
-};
-
-const deleteAccountPopup = ({ id }) => {
+const deleteAccountPopup = (id) => {
   MySwal.fire({
     icon: "success",
     title: "Delete Succesfully",
     text: "Account was deleted permanently from the system",
-    timer: 5000,
     confirmButtonColor: "#000",
     focusConfirm: false,
+    preConfirm: async () => {
+      console.log(id);
+      await axios.post(
+        API_HOST + "delete-user",
+        { userId: id },
+        { withCredentials: true }
+      );
+    },
   });
 };
 
-const changePasswordPopup = ({ id }) => {
+const updatePassword = (value) => {
   MySwal.fire({
-    icon: "success",
-    title: "Email Sent",
-    text: "Login to your email account and change your password",
-    timer: 5000,
-    confirmButtonColor: "#000",
-    focusConfirm: false,
+    html: <ResetPasswordModal value={value} />,
+    width: 700,
+    showConfirmButton: false,
+    showCloseButton: true,
   });
 };

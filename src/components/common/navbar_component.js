@@ -6,9 +6,7 @@ import useAuthHook, { useCheckLogin } from "../../helpers/hooks/useAuthHook";
 const NavbarComponent = ({ title = "DLW SYSTEM" }) => {
   const { user } = useSelector((state) => state.user);
   const { logout } = useAuthHook();
-
   useCheckLogin();
-
   return (
     <React.Fragment>
       <div className="flex flex-row justify-between py-4 px-5 shadow-md items-center">

@@ -3,6 +3,7 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
   signOut,
+  sendPasswordResetEmail,
 } from "@firebase/auth";
 import {
   collection,
@@ -11,9 +12,10 @@ import {
   getDoc,
   updateDoc,
 } from "@firebase/firestore";
+
 import { authentication, firestore } from "../config/firebase_config";
 
-const USERS_QUERY = collection(firestore, "users");
+export const USERS_QUERY = collection(firestore, "users");
 
 /**
  * Login Function
@@ -98,6 +100,9 @@ const modifyAgreement = async (id) => {
   }
 };
 
+const sendResetPassword = async (email) => {
+  sendPasswordResetEmail(USERS_QUERY, email);
+};
 /**
  * logout current user Function
  */
@@ -118,6 +123,7 @@ const AuthService = {
   logout,
   readAgreement,
   modifyAgreement,
+  sendResetPassword,
 };
 
 export default AuthService;
