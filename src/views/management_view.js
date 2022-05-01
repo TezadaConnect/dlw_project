@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { FaMoneyBill } from "react-icons/fa";
 import { MdLocalLaundryService } from "react-icons/md";
 import Swal from "sweetalert2";
@@ -11,9 +11,9 @@ import {
   GraphDisplay,
   ProductServiceCard,
 } from "../components/management_component";
-import { query, onSnapshot } from "@firebase/firestore";
 import CreateServiceModal from "../components/modals/create_service_modal";
-import { PRODUCT_QUERY } from "../services/product_service";
+import { useSelector } from "react-redux";
+import { useGetProducts } from "../helpers/hooks/useStartDepHooks";
 
 const MySwal = withReactContent(Swal);
 
@@ -32,23 +32,7 @@ const sidebarItems = [
 
 const ManagementView = () => {
   const [page, setPage] = useState(1);
-
-  const [product, setProduct] = useState([]);
-
-  useEffect(() => {
-    const unSub = onSnapshot(query(PRODUCT_QUERY), (snap) => {
-      const collection = [];
-      snap.forEach((doc) => {
-        collection.push({
-          id: doc.id,
-          data: doc.data(),
-        });
-      });
-      setProduct(collection);
-    });
-    return unSub;
-  }, []);
-
+  useGetProducts();
   return (
     <React.Fragment>
       <div className="flex flex-row">
@@ -59,7 +43,7 @@ const ManagementView = () => {
           <NavbarComponent title="MANAGEMENT" />
           <div className="mt-5 mx-5">
             {page === 1 && <CashFlowDisplay />}
-            {page === 2 && <ProductServices product={product} />}
+            {page === 2 && <ProductServices />}
           </div>
         </div>
       </div>
@@ -86,7 +70,8 @@ const CashFlowDisplay = () => {
   );
 };
 
-const ProductServices = ({ product }) => {
+const ProductServices = () => {
+  const { products } = useSelector((state) => state.service_product);
   return (
     <React.Fragment>
       <div className="object-contain flex flex-row justify-between items-center">
@@ -99,7 +84,7 @@ const ProductServices = ({ product }) => {
         </button>
       </div>
       <div className="w-full grid grid-cols-5 gap-3">
-        {product?.map((element, key) => {
+        {products?.map((element, key) => {
           return <ProductServiceCard key={key} item={element} />;
         })}
       </div>

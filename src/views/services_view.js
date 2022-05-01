@@ -1,14 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
 import { FaTruckPickup, FaWalking } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import NavbarComponent from "../components/common/navbar_component";
+import { errorPopup } from "../components/common/response_component";
 import SidebarComponent from "../components/common/sidebar_component";
 import { DragableElements } from "../components/services_components";
 import {
   setPickUpData,
   setWalkInData,
 } from "../redux/slice/service_product_slice";
+import RequestService from "../services/request_service";
 
 const sidebarItems = [
   {
@@ -34,10 +36,8 @@ const addToList = (list, index, element) => {
   result.splice(index, 0, element);
   return result;
 };
-
 const ServicesView = () => {
   const [page, setPage] = useState(1);
-
   return (
     <React.Fragment>
       <div className="flex flex-row">
@@ -75,8 +75,9 @@ const ServiceWalkin = () => {
       value: "done",
     },
   ];
-
+  const { user } = useSelector((state) => state.user);
   const { walk_in } = useSelector((state) => state.service_product);
+  const { refresh } = useSelector((state) => state.response);
   const dispatch = useDispatch();
 
   const onDragEnd = (result) => {
@@ -85,26 +86,95 @@ const ServiceWalkin = () => {
     }
 
     const listCopy = { ...walk_in?.data };
-
     const sourceList = listCopy[result.source.droppableId];
-
     const [removedElement, newSourceList] = removeFromList(
       sourceList,
       result.source.index
     );
-
     listCopy[result.source.droppableId] = newSourceList;
-
     const destinationList = listCopy[result.destination.droppableId];
-
     listCopy[result.destination.droppableId] = addToList(
       destinationList,
       result.destination.index,
       removedElement
     );
 
-    dispatch(setWalkInData(listCopy));
+    if (
+      result.source.droppableId === "request" &&
+      result.destination.droppableId === "clean"
+    ) {
+      RequestService.requestTableModify(
+        removedElement.id,
+        result.destination.droppableId
+      );
+      return dispatch(setWalkInData(listCopy));
+    }
+
+    if (
+      result.source.droppableId === "clean" &&
+      result.destination.droppableId === "done"
+    ) {
+      RequestService.requestTableModify(
+        removedElement.id,
+        result.destination.droppableId
+      );
+      return dispatch(setWalkInData(listCopy));
+    }
+
+    if (user?.role === "admin") {
+      if (
+        result.source.droppableId === "clean" &&
+        result.destination.droppableId === "request"
+      ) {
+        RequestService.requestTableModify(
+          removedElement.id,
+          result.destination.droppableId
+        );
+        return dispatch(setWalkInData(listCopy));
+      }
+      if (
+        result.source.droppableId === "done" &&
+        result.destination.droppableId === "clean"
+      ) {
+        RequestService.requestTableModify(
+          removedElement.id,
+          result.destination.droppableId
+        );
+        return dispatch(setWalkInData(listCopy));
+      }
+    }
+
+    if (
+      result.source.droppableId === "request" &&
+      result.destination.droppableId === "done"
+    ) {
+      return errorPopup("Can't jump from request to done");
+    }
+
+    if (
+      result.source.droppableId === "done" &&
+      result.destination.droppableId === "request"
+    ) {
+      return errorPopup("Can't jump from done to request");
+    }
+
+    if (result.destination.droppableId === result.source.droppableId) {
+      return dispatch(setWalkInData(listCopy));
+    }
+
+    errorPopup("Can't revert Item from previous state");
   };
+
+  useEffect(() => {
+    RequestService.readRequest()
+      .then((value) => {
+        dispatch(setWalkInData(value));
+      })
+      .catch((err) => {
+        errorPopup(err.message);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refresh]);
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
@@ -141,6 +211,8 @@ const ServicePickup = () => {
   ];
 
   const { pick_up } = useSelector((state) => state.service_product);
+  const { user } = useSelector((state) => state.user);
+  const { refresh } = useSelector((state) => state.response);
   const dispatch = useDispatch();
 
   const onDragEnd = (result) => {
@@ -167,8 +239,86 @@ const ServicePickup = () => {
       removedElement
     );
 
-    dispatch(setPickUpData(listCopy));
+    if (
+      result.source.droppableId === "request" &&
+      result.destination.droppableId === "clean"
+    ) {
+      RequestService.requestTableModify(
+        removedElement.id,
+        result.destination.droppableId,
+        false
+      );
+      return dispatch(setPickUpData(listCopy));
+    }
+
+    if (
+      result.source.droppableId === "clean" &&
+      result.destination.droppableId === "done"
+    ) {
+      RequestService.requestTableModify(
+        removedElement.id,
+        result.destination.droppableId,
+        false
+      );
+      return dispatch(setPickUpData(listCopy));
+    }
+
+    if (user?.role === "admin") {
+      if (
+        result.source.droppableId === "clean" &&
+        result.destination.droppableId === "request"
+      ) {
+        RequestService.requestTableModify(
+          removedElement.id,
+          result.destination.droppableId,
+          false
+        );
+        return dispatch(setPickUpData(listCopy));
+      }
+      if (
+        result.source.droppableId === "done" &&
+        result.destination.droppableId === "clean"
+      ) {
+        RequestService.requestTableModify(
+          removedElement.id,
+          result.destination.droppableId,
+          false
+        );
+        return dispatch(setPickUpData(listCopy));
+      }
+    }
+
+    if (
+      result.source.droppableId === "request" &&
+      result.destination.droppableId === "done"
+    ) {
+      return errorPopup("Can't jump from request to done");
+    }
+
+    if (
+      result.source.droppableId === "done" &&
+      result.destination.droppableId === "request"
+    ) {
+      return errorPopup("Can't jump from done to request");
+    }
+
+    if (result.destination.droppableId === result.source.droppableId) {
+      return dispatch(setPickUpData(listCopy));
+    }
+
+    errorPopup("Can't revert Item from previous state");
   };
+
+  useEffect(() => {
+    RequestService.readRequest(false)
+      .then((value) => {
+        dispatch(setPickUpData(value));
+      })
+      .catch((err) => {
+        errorPopup(err.message);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refresh]);
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
@@ -180,6 +330,7 @@ const ServicePickup = () => {
               key={item.value}
               colTitle={item.label}
               colID={item.value}
+              is_walkin={false}
             />
           );
         })}

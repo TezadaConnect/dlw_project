@@ -5,6 +5,8 @@ export const InputComponent = ({
   name,
   label,
   formik,
+  is_read = false,
+  value = null,
   type = "",
 }) => {
   const { values, handleChange, errors, touched } = formik;
@@ -16,11 +18,12 @@ export const InputComponent = ({
         </label>
         <input
           type={type}
-          value={values[name]}
+          value={value ?? values[name]}
           className="appearance-none p-3 bg-gray-100 box-border border border-gray-300 rounded focus:outline-none focus:border-gray-600 object-contain w-full"
           id={name}
           placeholder={placeholder ?? "label"}
           name={name ?? "label"}
+          readOnly={is_read}
           onChange={handleChange}
         />
         {touched[name] && errors[name] ? (

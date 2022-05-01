@@ -3,6 +3,7 @@ import {
   setDoc,
   doc,
   getDoc,
+  getDocs,
   updateDoc,
   deleteDoc,
 } from "@firebase/firestore";
@@ -49,6 +50,15 @@ const getProduct = async (id) => {
   } catch (error) {
     throw error;
   }
+};
+
+const getAllProduct = async () => {
+  const list = [];
+  const snap = await getDocs(PRODUCT_QUERY);
+  snap?.forEach((element) => {
+    list.push({ id: element.id, ...element.data() });
+  });
+  return list;
 };
 
 const updateProduct = async (id, values, file) => {
@@ -107,5 +117,6 @@ const ProductService = {
   createNewProduct,
   updateProduct,
   deleteProduct,
+  getAllProduct,
 };
 export default ProductService;

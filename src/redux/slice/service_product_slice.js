@@ -5,24 +5,20 @@ export const serviceProductSlice = createSlice({
   initialState: {
     walk_in: {
       data: {
-        request: [
-          { id: `1`, price: "200", content: `Lorem ipsum donor` },
-          { id: `2`, price: "230", content: `Lorem ipsum donor` },
-        ],
-        clean: [{ id: `4`, price: "503", content: `Lorem ipsum donor` }],
-        done: [{ id: `5`, price: "349", content: `Lorem ipsum donor` }],
+        request: [],
+        clean: [],
+        done: [],
       },
     },
     pick_up: {
       data: {
-        request: [
-          { id: `1`, price: "200", content: `Lorem ipsum donor` },
-          { id: `2`, price: "230", content: `Lorem ipsum donor` },
-        ],
-        clean: [{ id: `4`, price: "503", content: `Lorem ipsum donor` }],
-        done: [{ id: `5`, price: "349", content: `Lorem ipsum donor` }],
+        request: [],
+        clean: [],
+        done: [],
       },
     },
+
+    products: [],
   },
   reducers: {
     setWalkInData: (state, action) => {
@@ -31,9 +27,13 @@ export const serviceProductSlice = createSlice({
     setPickUpData: (state, action) => {
       state.pick_up.data = action.payload;
     },
+    setProduct: (state, action) => {
+      state.products = action.payload;
+    },
   },
 });
 
-export const { setWalkInData, setPickUpData } = serviceProductSlice.actions;
+export const { setWalkInData, setPickUpData, setProduct } =
+  serviceProductSlice.actions;
 
 export default serviceProductSlice.reducer;

@@ -53,7 +53,7 @@ const CreateServiceModal = ({ type = creationTypeEnum.new, prod_id }) => {
       }
 
       await ProductService.updateProduct(prod_id, values, image.value)
-        .then(() => successPopup("Item: " + prod_id + " product was created!"))
+        .then(() => successPopup("Item: " + prod_id + " product was updated!"))
         .catch((err) => errorPopup(err.message));
     },
   });
@@ -178,20 +178,20 @@ const ArrayInputComponent = ({
   formik,
   listLabel,
 }) => {
-  const [state, setState] = useState("");
+  const [state, setState] = useState({ kilo: "", price: "" });
   const [array, setArray] = useState("");
 
   const addArrayState = () => {
     let arrayHolder = [];
-    if (state !== "") {
+    if (state.kilo !== "" && state.price !== "") {
       if (array === "") {
-        arrayHolder = [state];
+        arrayHolder = [...formik.values[name], JSON.stringify(state)];
       }
       if (array !== "") {
-        arrayHolder = [...array, state];
+        arrayHolder = [...array, JSON.stringify(state)];
       }
       setArray(arrayHolder);
-      setState("");
+      setState({ kilo: "", price: "" });
     }
   };
 
@@ -222,13 +222,17 @@ const ArrayInputComponent = ({
         <div className="text-left mb-2">
           <p className="font-bold">{listTitle}</p>
           {formik.values[name]?.map((element, key) => {
+            const stringy = JSON.parse(element);
             return (
               <div key={key} className="flex flex-row items-center">
-                <p className="ml-2 p-1 text-sm">~ {element}</p>
+                <p className="ml-2 p-1 text-sm">
+                  ~{" "}
+                  {stringy?.kilo + " Kilograms / " + stringy?.price + " pesos"}
+                </p>
                 <HiOutlineMinusCircle
                   className="text-red-600 active:translate-y-1"
                   size={18}
-                  onClick={() => deleteArrayState(key)}
+                  onClick={() => deleteArrayState(stringy)}
                 />
               </div>
             );
@@ -242,14 +246,20 @@ const ArrayInputComponent = ({
         </label>
         <div className="flex flex-row w-full gap-2 items-center">
           <input
-            value={state}
-            className="appearance-none p-3 bg-gray-100 box-border border border-gray-300 rounded focus:outline-none focus:border-gray-600 object-contain w-full"
-            placeholder={placeholder}
-            onChange={(e) => setState(e.target.value)}
+            value={state?.kilo}
+            className="appearance-none p-3 bg-gray-100 box-border border border-gray-300 rounded focus:outline-none focus:border-gray-600 object-contain flex-grow"
+            placeholder={"Kilograms"}
+            onChange={(e) => setState({ ...state, kilo: e.target.value })}
+          />
+          <input
+            value={state?.price}
+            className="appearance-none p-3 bg-gray-100 box-border border border-gray-300 rounded focus:outline-none focus:border-gray-600 object-contain flex-grow"
+            placeholder={"Price in Pesos"}
+            onChange={(e) => setState({ ...state, price: e.target.value })}
           />
           <MdAddCircleOutline
-            className="text-green-600 active:translate-y-1"
-            size={40}
+            className="text-green-600 active:translate-y-1 w-50"
+            size={30}
             onClick={() => addArrayState()}
           />
         </div>
