@@ -1,5 +1,10 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, signOut } from "@firebase/auth";
-import { collection, doc, setDoc, getDoc, updateDoc } from "@firebase/firestore";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+  signOut,
+} from "firebase/auth";
+import { collection, doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 import { authentication, firestore } from "../config/firebase_config";
 
 const USERS_QUERY = collection(firestore, "users");
@@ -12,7 +17,11 @@ const USERS_QUERY = collection(firestore, "users");
 const login = async (values) => {
   let { email, password } = values;
   try {
-    const { user } = await signInWithEmailAndPassword(authentication, email.trim(), password);
+    const { user } = await signInWithEmailAndPassword(
+      authentication,
+      email.trim(),
+      password
+    );
     return user;
   } catch (error) {
     throw error;
@@ -28,7 +37,11 @@ const register = async (values) => {
   try {
     const user_fname = (fname.charAt(0).toUpperCase() + fname.slice(1)).trim();
     const user_lname = (lname.charAt(0).toUpperCase() + lname.slice(1)).trim();
-    const { user } = await createUserWithEmailAndPassword(authentication, email.trim(), password);
+    const { user } = await createUserWithEmailAndPassword(
+      authentication,
+      email.trim(),
+      password
+    );
 
     await updateProfile(user, {
       displayName: user_fname + " " + user_lname,

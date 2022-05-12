@@ -14,6 +14,10 @@ import NoticeView from "../view/notice_view";
 import NotificationView from "../view/notification_view";
 import AcquireView from "../view/acquire_view";
 import StatusView from "../view/status_view";
+import {
+  useGetCurrentRequest,
+  useGetProducts,
+} from "../helper/hooks/use_start_dep_hooks";
 
 const Stack = createNativeStackNavigator();
 
@@ -40,6 +44,9 @@ const AppRoute = () => {
     console.log(user);
   }, []);
 
+  useGetProducts();
+  useGetCurrentRequest();
+
   return (
     <React.Fragment>
       <NavigationContainer>
@@ -55,7 +62,11 @@ const AppRoute = () => {
           <Stack.Screen name="Home" component={HomeView} />
           <Stack.Screen name="Terms" component={TermsView} />
           <Stack.Screen name="Notification" component={NotificationView} />
-          <Stack.Screen name="Acquire" component={AcquireView} />
+          <Stack.Screen
+            name="Acquire"
+            initialParams={{ itemId: "" }}
+            component={AcquireView}
+          />
           <Stack.Screen name="Status" component={StatusView} />
           <Stack.Screen name="Notice" component={NoticeView} />
         </Stack.Navigator>

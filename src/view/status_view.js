@@ -1,4 +1,10 @@
-import { TopNavigation, Text, Layout, Button } from "@ui-kitten/components";
+import {
+  TopNavigation,
+  Text,
+  Layout,
+  Icon,
+  TopNavigationAction,
+} from "@ui-kitten/components";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native";
@@ -6,11 +12,36 @@ import { layouts } from "../helper/styles";
 import { PulseIndicator } from "react-native-indicators";
 import CountDown from "react-native-countdown-component";
 import { showMessage } from "react-native-flash-message";
-import useAuthHook from "../helper/hooks/auth_hook";
+import { useSelector } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
+
+const setChangesForRemainingDate = (value) => {
+  let title = "";
+  if (value === 1) title = "Pickup will come soon";
+  if (value === 2) title = "Washing process";
+  if (value === 3) title = "Items will be delivered soon";
+  if (value === 4) title = "Service Completed!";
+  if (value === 0) title = "Waiting for response";
+  return title;
+};
+
+const PICKUP = [
+  "WAITING",
+  "PICKUP",
+  "REJECT",
+  "WASH",
+  "HANDWASH",
+  "DRY",
+  "IRON",
+  "FOLD",
+  "DELIVERY",
+  "DONE",
+];
 
 const StatusView = () => {
+  const { currentRequest } = useSelector((state) => state.product);
   const [counter, setCounter] = useState(0);
-  const { logout } = useAuthHook();
+  const next = useNavigation();
   const [title, setTitle] = useState("Waiting for response");
   const colorValue = {
     indi1: counter >= 0 ? "#2ecc71" : "#d68f98",
@@ -29,125 +60,150 @@ const StatusView = () => {
   };
 
   useEffect(() => {
-    if (counter === 1) setTitle("Pickup will come soon");
-    if (counter === 2) setTitle("Washing process");
-    if (counter === 3) setTitle("Items will be delivered soon");
-    if (counter === 4) setTitle("Service Completed!");
-    if (counter === 0) setTitle("Waiting for response");
+    setTitle(setChangesForRemainingDate(counter));
   }, [counter]);
+
+  useEffect(() => {
+    const stateOfItem = currentRequest?.status ?? null;
+    if (stateOfItem === PICKUP[0]) return setCounter(0);
+    if (stateOfItem === PICKUP[1]) return setCounter(1);
+    if (stateOfItem === PICKUP[8]) return setCounter(3);
+    if (stateOfItem === PICKUP[9]) return setCounter(4);
+    if (stateOfItem === PICKUP[2]) return setCounter(5);
+    return setCounter(2);
+  }, [currentRequest?.status ?? null]);
 
   return (
     <SafeAreaView>
       <Layout style={layouts.screen}>
         <Layout>
           <TopNavigation
+            accessoryLeft={BackAction}
             title={() => <Text category="h6">Service Status</Text>}
           />
-          <Layout style={{ marginTop: 80 }}>
-            <Text
-              style={{ textAlign: "center", fontWeight: "bold" }}
-              category="h6"
-            >
-              {title}...
-            </Text>
-            <Layout style={style.progressLayout}>
-              <Layout
-                style={{
-                  backgroundColor: colorValue.indi1,
-                  ...style.dotLayout,
-                }}
-              >
-                {counter === 0 ? <PulseIndicator color="#2ecc71" /> : null}
-              </Layout>
-              <Layout
-                style={{
-                  flexGrow: 1,
-                  height: 5,
-                  backgroundColor: colorLineValue.indi2,
-                }}
-              ></Layout>
-              <Layout
-                style={{
-                  backgroundColor: colorValue.indi2,
-                  ...style.dotLayout,
-                }}
-              >
-                {counter === 1 ? <PulseIndicator color="#2ecc71" /> : null}
-              </Layout>
-              <Layout
-                style={{
-                  flexGrow: 1,
-                  height: 5,
-                  backgroundColor: colorLineValue.indi3,
-                }}
-              ></Layout>
-              <Layout
-                style={{
-                  backgroundColor: colorValue.indi3,
-                  ...style.dotLayout,
-                }}
-              >
-                {counter === 2 ? <PulseIndicator color="#2ecc71" /> : null}
-              </Layout>
-              <Layout
-                style={{
-                  flexGrow: 1,
-                  height: 5,
-                  backgroundColor: colorLineValue.indi4,
-                }}
-              ></Layout>
-              <Layout
-                style={{
-                  backgroundColor: colorValue.indi4,
-                  ...style.dotLayout,
-                }}
-              >
-                {counter === 3 ? <PulseIndicator color="#2ecc71" /> : null}
-              </Layout>
-              <Layout
-                style={{
-                  flexGrow: 1,
-                  height: 5,
-                  backgroundColor: colorLineValue.indi5,
-                }}
-              ></Layout>
-              <Layout
-                style={{
-                  backgroundColor: colorValue.indi5,
-                  ...style.dotLayout,
-                }}
-              >
-                {counter === 4 ? <PulseIndicator color="#2ecc71" /> : null}
-              </Layout>
-            </Layout>
 
-            <CountDown
-              digitStyle={{ backgroundColor: "#FFF" }}
-              until={20}
-              onFinish={() => {
-                setCounter(4);
-                showMessage({
-                  message: "Service done!",
-                  icon: "success",
-                  type: "success",
-                });
-                logout();
-              }}
-              // onPress={() => alert("hello")}
-              onChange={(e) => {
-                if (e === 15) {
-                  setCounter(1);
-                }
-                if (e === 10) {
-                  setCounter(2);
-                }
-                if (e === 5) {
-                  setCounter(3);
-                }
-              }}
-              size={20}
-            />
-          </Layout>
+          {counter === 5 ? (
+            <Layout>
+              <Layout>
+                <Text
+                  style={{
+                    fontSize: 18,
+                    textAlign: "center",
+                    fontWeight: "bold",
+                    marginBottom: 10,
+                  }}
+                >
+                  Apply for Service
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 50,
+                    color: "#C80048",
+                    fontWeight: "bold",
+                    textAlign: "center",
+                  }}
+                >
+                  REJECTED
+                </Text>
+              </Layout>
+              <Button style={{ margin: 15 }} onPress={() => toServices()}>
+                <Text>RETURN TO SERVICE MENU</Text>
+              </Button>
+            </Layout>
+          ) : (
+            <Layout style={{ marginTop: 80 }}>
+              <Text
+                style={{ textAlign: "center", fontWeight: "bold" }}
+                category="h6"
+              >
+                {title}.
+              </Text>
+              <Layout style={style.progressLayout}>
+                <Layout
+                  style={{
+                    backgroundColor: colorValue.indi1,
+                    ...style.dotLayout,
+                  }}
+                >
+                  {counter === 0 ? <PulseIndicator color="#2ecc71" /> : null}
+                </Layout>
+                <Layout
+                  style={{
+                    flexGrow: 1,
+                    height: 5,
+                    backgroundColor: colorLineValue.indi2,
+                  }}
+                ></Layout>
+                <Layout
+                  style={{
+                    backgroundColor: colorValue.indi2,
+                    ...style.dotLayout,
+                  }}
+                >
+                  {counter === 1 ? <PulseIndicator color="#2ecc71" /> : null}
+                </Layout>
+                <Layout
+                  style={{
+                    flexGrow: 1,
+                    height: 5,
+                    backgroundColor: colorLineValue.indi3,
+                  }}
+                ></Layout>
+                <Layout
+                  style={{
+                    backgroundColor: colorValue.indi3,
+                    ...style.dotLayout,
+                  }}
+                >
+                  {counter === 2 ? <PulseIndicator color="#2ecc71" /> : null}
+                </Layout>
+                <Layout
+                  style={{
+                    flexGrow: 1,
+                    height: 5,
+                    backgroundColor: colorLineValue.indi4,
+                  }}
+                ></Layout>
+                <Layout
+                  style={{
+                    backgroundColor: colorValue.indi4,
+                    ...style.dotLayout,
+                  }}
+                >
+                  {counter === 3 ? <PulseIndicator color="#2ecc71" /> : null}
+                </Layout>
+                <Layout
+                  style={{
+                    flexGrow: 1,
+                    height: 5,
+                    backgroundColor: colorLineValue.indi5,
+                  }}
+                ></Layout>
+                <Layout
+                  style={{
+                    backgroundColor: colorValue.indi5,
+                    ...style.dotLayout,
+                  }}
+                >
+                  {counter === 4 ? <PulseIndicator color="#2ecc71" /> : null}
+                </Layout>
+              </Layout>
+
+              <CountDown
+                digitStyle={{ backgroundColor: "#FFF" }}
+                until={20}
+                onFinish={() => {
+                  showMessage({
+                    message: "Service done!",
+                    icon: "success",
+                    type: "success",
+                  });
+                }}
+                onChange={(e) => {}}
+                size={20}
+              />
+            </Layout>
+          )}
         </Layout>
       </Layout>
     </SafeAreaView>
@@ -171,3 +227,15 @@ const style = StyleSheet.create({
     height: 20,
   },
 });
+
+const BackAction = () => {
+  const next = useNavigation();
+  return (
+    <TopNavigationAction
+      icon={BackIcon}
+      onPress={() => next.navigate("Home")}
+    />
+  );
+};
+
+const BackIcon = (props) => <Icon {...props} name="arrow-back" />;

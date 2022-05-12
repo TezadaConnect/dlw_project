@@ -1,4 +1,3 @@
-import { async } from "@firebase/util";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect } from "react";
 import { showMessage } from "react-native-flash-message";

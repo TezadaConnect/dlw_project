@@ -1,13 +1,12 @@
+import { ApplicationProvider, IconRegistry } from "@ui-kitten/components";
+import { EvaIconsPack } from "@ui-kitten/eva-icons";
 import React from "react";
 import { Provider } from "react-redux";
-import store from "./src/redux/store";
+import store from "./redux/store";
+import AppRoute from "./router/app_route";
 import * as eva from "@eva-design/eva";
-import { ApplicationProvider, IconRegistry } from "@ui-kitten/components";
-import AppRoute from "./src/router/app_route";
-import { EvaIconsPack } from "@ui-kitten/eva-icons";
+import { LoadingScreen } from "./components/common/loading_screen";
 import FlashMessage from "react-native-flash-message";
-import { LoadingScreen } from "./src/components/common/loading_screen";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function App() {
   return (

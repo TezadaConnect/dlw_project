@@ -20,10 +20,12 @@ const LoginView = () => {
     enableReinitialize: true,
     initialValues: { email: "", password: "" },
     validationSchema: Yup.object({
-      email: Yup.string().required("This field is required").email("Must be a valid email"),
+      email: Yup.string()
+        .required("This field is required")
+        .email("Must be a valid email"),
       password: Yup.string().required("This field is required"),
     }),
-    onSubmit: async (values) => {
+    onSubmit: (values) => {
       login(values);
     },
   });
@@ -33,15 +35,32 @@ const LoginView = () => {
   return (
     <SafeAreaView>
       <Layout style={layouts.screen}>
-        <TopNavigation title={() => <Text category="h6">Login your Account</Text>} />
+        <TopNavigation
+          title={() => <Text category="h6">Login your Account</Text>}
+        />
 
         <Layout style={layouts.padding}>
           <Layout style={style.imgLayout}>
-            <Image source={require("../../../assets/img/logo.png")} resizeMode="contain" style={style.imgStyle} />
+            <Image
+              source={require("../../../assets/img/logo.png")}
+              resizeMode="contain"
+              style={style.imgStyle}
+            />
           </Layout>
 
-          <TextField name="email" label="Email" placeholder="email" formik={loginForm} />
-          <TextField name="password" label="Password" placeholder="password" isPass={true} formik={loginForm} />
+          <TextField
+            name="email"
+            label="Email"
+            placeholder="email"
+            formik={loginForm}
+          />
+          <TextField
+            name="password"
+            label="Password"
+            placeholder="password"
+            isPass={true}
+            formik={loginForm}
+          />
         </Layout>
 
         <Layout style={layouts.padding}>

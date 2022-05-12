@@ -1,21 +1,9 @@
 {
-  "name": "DLW PROJECT",
-  "displayName": "DLW PROJECT",
   "expo": {
-    "name": "DWL PROJECT",
+    "name": "dlw-project",
+    "slug": "dlw",
     "version": "1.0.0",
-    "slug": "dlw-project",
-    "assetBundlePatterns": ["**/*"],
-    "web": {
-      "build": {
-        "babel": {
-          "include": ["@ui-kitten/components"]
-        }
-      }
-    },
-    "android": {
-      "package": "com.dlw.dlw_project",
-      "versionCode": 1
-    }
-  }
+    "assetBundlePatterns": ["**/*"]
+  },
+  "name": "dlw-project"
 }
