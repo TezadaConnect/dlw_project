@@ -70,8 +70,8 @@ const CashFlowDisplay = () => {
         <div className="w-3/12 flex flex-col gap-3">
           {CARD_DATA.map((element, key) => {
             return (
-              <div onClick={() => setBoard(key)}>
-                <DisplayManagementCard key={key} data={element} />
+              <div key={key} onClick={() => setBoard(key)}>
+                <DisplayManagementCard board={board} data={element} />
               </div>
             );
           })}

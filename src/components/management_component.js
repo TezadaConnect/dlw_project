@@ -24,27 +24,80 @@ export const CARD_DATA = [
   {
     icon: <FaMoneyBill size={150} />,
     label: "TOTAL INCOME",
-    value: "2045",
+    value: 0,
     sub_label: "PHP/MONTH",
     cssStyle: "text-white bg-green-600",
   },
   {
     icon: <FaTruckPickup size={150} />,
     label: "PICKUP REQUESTS",
-    value: "205",
+    value: 1,
     sub_label: "HEAD/MONTH",
     cssStyle: "text-white bg-blue-600",
   },
   {
     icon: <FaWalking size={150} />,
     label: "WALKIN REQUESTS",
-    value: "230",
+    value: 2,
     sub_label: "HEAD/MONTH",
     cssStyle: "text-white bg-red-600",
   },
 ];
 
 export const DisplayManagementCard = ({ data }) => {
+  const [state, setState] = useState(0);
+
+  const getValues = async () => {
+    const dateNowVar = new Date();
+    const newDate = {
+      month: dateNowVar.getMonth() + 1,
+      year: dateNowVar.getFullYear(),
+    };
+
+    const dateNowRange = {
+      min: new Date(newDate.year + "-" + newDate.month),
+      max: new Date(newDate.year, newDate.month, 0),
+    };
+
+    if (data.value === 0) {
+      let val1 = 0;
+      let val2 = 0;
+
+      await FinanceService.getAllPickupRequest(1, dateNowRange)
+        .then((res) => {
+          val1 = res;
+        })
+        .catch((err) => console.log(err));
+
+      await FinanceService.getAllPickupRequest(0, dateNowRange)
+        .then((res) => {
+          val2 = res;
+        })
+        .catch((err) => console.log(err));
+
+      return setState(val1.price + val2.price);
+    }
+
+    if (data.value === 1) {
+      await FinanceService.getAllPickupRequest(1, dateNowRange)
+        .then((res) => {
+          return setState(res.count);
+        })
+        .catch((err) => console.log(err));
+    }
+
+    if (data.value === 2) {
+      await FinanceService.getAllPickupRequest(0, dateNowRange)
+        .then((res) => {
+          return setState(res.count);
+        })
+        .catch((err) => console.log(err));
+    }
+  };
+
+  useEffect(() => {
+    getValues();
+  }, [data]);
   return (
     <React.Fragment>
       <div>
@@ -54,7 +107,7 @@ export const DisplayManagementCard = ({ data }) => {
           <div className="object-contain">{data?.icon}</div>
           <div className="text-right">
             <p className="font-bold mb-3 text-xl">{data?.label}</p>
-            <p className="font-bold text-4xl">{data?.value}</p>
+            <p className="font-bold text-4xl">{state}</p>
             <p className="">{data?.sub_label}</p>
           </div>
         </div>
