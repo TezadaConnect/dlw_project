@@ -9,9 +9,11 @@ import {
 import "react-pro-sidebar/dist/css/styles.css";
 import { TiArrowBack } from "react-icons/ti";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const SidebarComponent = ({ item = [], setItem }) => {
   const navigate = useNavigate();
+  const { user } = useSelector((state) => state.user);
   return (
     <React.Fragment>
       <div style={{ width: "270px" }}></div>
@@ -22,6 +24,11 @@ const SidebarComponent = ({ item = [], setItem }) => {
 
         <SidebarContent>
           {item.map((element, key) => {
+            if (user?.role === "admin") {
+              if (element?.label === "Cash Flow") {
+                return null;
+              }
+            }
             return (
               <Menu key={key} iconShape="circle">
                 <MenuItem

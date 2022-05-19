@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaMoneyBill } from "react-icons/fa";
 import { MdLocalLaundryService } from "react-icons/md";
 import Swal from "sweetalert2";
@@ -33,6 +33,12 @@ const sidebarItems = [
 const ManagementView = () => {
   const [page, setPage] = useState(1);
   useGetProducts();
+  const { user } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    if (user?.role === "admin") return setPage(2);
+  }, []);
+
   return (
     <React.Fragment>
       <div className="flex flex-row">
@@ -54,15 +60,20 @@ const ManagementView = () => {
 export default ManagementView;
 
 const CashFlowDisplay = () => {
+  const [board, setBoard] = useState(0);
   return (
     <div>
       <div className="flex flex-row gap-3 h-full">
         <div className="w-9/12">
-          <GraphDisplay />
+          <GraphDisplay board={board} />
         </div>
         <div className="w-3/12 flex flex-col gap-3">
           {CARD_DATA.map((element, key) => {
-            return <DisplayManagementCard key={key} data={element} />;
+            return (
+              <div onClick={() => setBoard(key)}>
+                <DisplayManagementCard key={key} data={element} />
+              </div>
+            );
           })}
         </div>
       </div>

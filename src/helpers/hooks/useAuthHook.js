@@ -106,7 +106,7 @@ export const useCheckLogin = () => {
   const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
   useEffect(() => {
-    if (user === null) {
+    if (user?.id === null) {
       navigate("/", { replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

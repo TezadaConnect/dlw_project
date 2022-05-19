@@ -90,6 +90,14 @@ const requestStatusModify = async (id, status, is_walk = true) => {
   const QUERY = is_walk ? WALKIN_QUERY : PICKUP_QUERY;
   const date = new Date();
   const status_cap = status.toUpperCase();
+
+  if (status === "DONE") {
+    return await updateDoc(doc(QUERY, id), {
+      release_date: date,
+      status: status_cap,
+      updated_at: date,
+    });
+  }
   await updateDoc(doc(QUERY, id), {
     status: status_cap,
     updated_at: date,

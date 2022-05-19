@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaMoneyBill, FaTruckPickup, FaWalking } from "react-icons/fa";
 import {
   Bar,
@@ -16,6 +16,7 @@ import withReactContent from "sweetalert2-react-content";
 import CreateServiceModal from "./modals/create_service_modal";
 import { creationTypeEnum } from "../helpers/constant";
 import ProductService from "../services/product_service";
+import FinanceService from "../services/finance_service";
 
 const MySwal = withReactContent(Swal);
 
@@ -93,13 +94,52 @@ const data = [
   },
 ];
 
-export const GraphDisplay = () => {
+export const GraphDisplay = ({ board }) => {
   const [date, setDate] = useState(null);
+  const getDateValue = () => {
+    const dateNowVar = new Date(date);
+    const newDate = {
+      month: dateNowVar.getMonth() + 1,
+      year: dateNowVar.getFullYear(),
+    };
+
+    const dateNowRange = {
+      min: new Date(newDate.year + "-" + newDate.month),
+      max: new Date(newDate.year, newDate.month, 0),
+    };
+
+    FinanceService.getAllIncomeForTheMonth(dateNowRange, board)
+      .then((res) => setGraphData(res))
+      .catch((err) => console.log(err.message));
+  };
+
+  const [graphData, setGraphData] = useState();
+
+  useEffect(() => {
+    const dateNowVar = new Date();
+    const newDate = {
+      month: dateNowVar.getMonth() + 1,
+      year: dateNowVar.getFullYear(),
+    };
+
+    const dateNowRange = {
+      min: new Date(newDate.year + "-" + newDate.month),
+      max: new Date(newDate.year, newDate.month, 0),
+    };
+
+    FinanceService.getAllIncomeForTheMonth(dateNowRange, board)
+      .then((res) => setGraphData(res))
+      .catch((err) => console.log(err.message));
+  }, [board]);
+
+  const arrBoardHolder = ["All", "Pickup", "Requests"];
+
   return (
     <React.Fragment>
       <div className="h-full flex flex-col justify-between">
         <div className="mb-3 text-2xl font-bold flex flex-row justify-between flex-grow">
           <div>MONTHLY INCOME CHART</div>
+          <div>{arrBoardHolder[board]}</div>
           <div className="flex flex-row gap-4">
             <div className="text-base">
               <DatePicker
@@ -111,16 +151,20 @@ export const GraphDisplay = () => {
                 dateFormat="MMMM-yyyy"
                 showMonthYearPicker
                 showFullMonthYearPicker
+                // value={new Date.now()}
               />
             </div>
-            <button className="px-5 py-3 text-base rounded bg-black text-white hover:bg-gray-900 active:translate-y-1">
+            <button
+              onClick={() => getDateValue()}
+              className="px-5 py-3 text-base rounded bg-black text-white hover:bg-gray-900 active:translate-y-1"
+            >
               Search
             </button>
           </div>
         </div>
         <div className="h-full w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart width={150} height={100} data={data}>
+            <BarChart width={150} height={100} data={graphData}>
               <Tooltip wrapperStyle={{ backgroundColor: "blue" }} />
               <XAxis dataKey="date" />
               <YAxis dataKey="income" />
@@ -133,21 +177,6 @@ export const GraphDisplay = () => {
     </React.Fragment>
   );
 };
-
-export const PRODUCT_ITEM = [
-  {
-    id: "1",
-    name: "Wash Service",
-    img: "https://images.unsplash.com/photo-1582735689369-4fe89db7114c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-    alt: "wash-service",
-  },
-  {
-    id: "1",
-    name: "Dry Service",
-    img: "https://images.unsplash.com/photo-1561053720-76cd73ff22c3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-    alt: "wash-service",
-  },
-];
 
 export const ProductServiceCard = ({ item }) => {
   return (
