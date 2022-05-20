@@ -147,9 +147,10 @@ const data = [
   },
 ];
 
-export const GraphDisplay = ({ board }) => {
+export const GraphDisplay = ({ board, setBoard }) => {
   const [date, setDate] = useState(null);
   const getDateValue = () => {
+    setBoard(3);
     const dateNowVar = new Date(date);
     const newDate = {
       month: dateNowVar.getMonth() + 1,
@@ -169,20 +170,22 @@ export const GraphDisplay = ({ board }) => {
   const [graphData, setGraphData] = useState();
 
   useEffect(() => {
-    const dateNowVar = new Date();
-    const newDate = {
-      month: dateNowVar.getMonth() + 1,
-      year: dateNowVar.getFullYear(),
-    };
+    if (board === 0) {
+      const dateNowVar = new Date();
+      const newDate = {
+        month: dateNowVar.getMonth() + 1,
+        year: dateNowVar.getFullYear(),
+      };
 
-    const dateNowRange = {
-      min: new Date(newDate.year + "-" + newDate.month),
-      max: new Date(newDate.year, newDate.month, 0),
-    };
+      const dateNowRange = {
+        min: new Date(newDate.year + "-" + newDate.month),
+        max: new Date(newDate.year, newDate.month, 0),
+      };
 
-    FinanceService.getAllIncomeForTheMonth(dateNowRange, board)
-      .then((res) => setGraphData(res))
-      .catch((err) => console.log(err.message));
+      FinanceService.getAllIncomeForTheMonth(dateNowRange, board)
+        .then((res) => setGraphData(res))
+        .catch((err) => console.log(err.message));
+    }
   }, [board]);
 
   const arrBoardHolder = ["All", "Pickup", "Requests"];

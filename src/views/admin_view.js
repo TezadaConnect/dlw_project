@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { MdAccountCircle } from "react-icons/md";
+import { MdAccountCircle, MdSettingsApplications } from "react-icons/md";
 import { useTable } from "react-table/dist/react-table.development";
 import NavbarComponent from "../components/common/navbar_component";
 import SidebarComponent from "../components/common/sidebar_component";
@@ -14,6 +14,12 @@ import axios from "axios";
 import { API_HOST } from "../config/api_config";
 import { creationTypeEnum } from "../helpers/constant";
 import ResetPasswordModal from "../components/modals/reset_pass_modal";
+import {
+  ChangeImageModal,
+  ChangeValueModal,
+} from "../components/application_settings_components";
+import { useDispatch, useSelector } from "react-redux";
+import { setRefresh } from "../redux/slice/response_slice";
 
 const MySwal = withReactContent(Swal);
 
@@ -23,31 +29,25 @@ const sidebarItems = [
     value: 1,
     icon: <MdAccountCircle size={20} />,
   },
+  {
+    label: "App Setting",
+    value: 2,
+    icon: <MdSettingsApplications size={20} />,
+  },
 ];
 
 const AdminView = () => {
+  const [page, setPage] = useState(1);
   return (
     <React.Fragment>
       <div className="flex flex-row">
         <div className="h-screen">
-          <SidebarComponent item={sidebarItems} />
+          <SidebarComponent item={sidebarItems} setItem={setPage} />
         </div>
         <div className="flex-grow">
           <NavbarComponent title="ADMINISTRATOR" />
-          <div className="object-contain flex flex-row justify-between items-center mx-5 mt-4">
-            <p className="text-xl text-gray-500 font-bold">ALL ACCOUNTS</p>
-            <button
-              onClick={() => createAccountModal()}
-              className="px-5 py-3 rounded bg-black text-white hover:bg-gray-900 active:translate-y-1"
-            >
-              Create New Account
-            </button>
-          </div>
-          <div className="mt-3 mx-5">
-            <div>
-              <TableView />
-            </div>
-          </div>
+          {page === 1 && <AccountsView />}
+          {page === 2 && <ApplicationSetting />}
         </div>
       </div>
     </React.Fragment>
@@ -55,6 +55,27 @@ const AdminView = () => {
 };
 
 export default AdminView;
+
+const AccountsView = () => {
+  return (
+    <React.Fragment>
+      <div className="object-contain flex flex-row justify-between items-center mx-5 mt-4">
+        <p className="text-xl text-gray-500 font-bold">ALL ACCOUNTS</p>
+        <button
+          onClick={() => createAccountModal()}
+          className="px-5 py-3 rounded bg-black text-white hover:bg-gray-900 active:translate-y-1"
+        >
+          Create New Account
+        </button>
+      </div>
+      <div className="mt-3 mx-5">
+        <div>
+          <TableView />
+        </div>
+      </div>
+    </React.Fragment>
+  );
+};
 
 const TableView = () => {
   const [accounts, setAccounts] = useState([]);
@@ -221,6 +242,105 @@ const updatePassword = (value) => {
   MySwal.fire({
     html: <ResetPasswordModal value={value} />,
     width: 700,
+    showConfirmButton: false,
+    showCloseButton: true,
+  });
+};
+
+const ApplicationSetting = () => {
+  const { project } = useSelector((state) => state.response);
+  const dispatch = useDispatch();
+  return (
+    <React.Fragment>
+      <div className="w-1/3 m-auto flex flex-col items-start mt-14">
+        <div className="flex flex-col items-center w-full mb-14">
+          <div className="rounded-full h-48 w-48 relative cursor-pointer">
+            {project?.img_url === "" ? (
+              <div className="absolute top-0 flex items-center justify-center  h-48 w-48 bg-black text-white rounded-full">
+                Change Profile
+              </div>
+            ) : (
+              <img
+                src={project?.img_url}
+                alt="This is application Logo"
+                className="rounded-full h-48 w-48"
+              />
+            )}
+
+            <div
+              onClick={() =>
+                editImageComponent(project?.img_path, project?.img_url)
+              }
+              className="opacity-0 absolute top-0 flex items-center justify-center  transition delay-75 hover:opacity-75 h-48 w-48 bg-black text-white rounded-full"
+            >
+              Change Profile
+            </div>
+          </div>
+        </div>
+
+        <div className="w-full flex flex-row justify-between mb-5">
+          <div className="flex flex-row gap-3">
+            <div className="font-semibold text-gray-600">App name: </div>
+            <div className="font-bold">{project?.app_name}</div>
+          </div>
+          <div>
+            <BsPencilFill
+              onClick={async () => {
+                await editValueComponent(
+                  "app_name",
+                  "Application name",
+                  project?.app_name
+                );
+                dispatch(setRefresh());
+              }}
+              className="hover:text-green-700"
+            />
+          </div>
+        </div>
+
+        <div className="w-full flex flex-row justify-between mb-5">
+          <div className="flex flex-row gap-3">
+            <div className="font-semibold text-gray-600">Company: </div>
+            <div className="font-bold">{project?.company_name}</div>
+          </div>
+          <div>
+            <BsPencilFill
+              onClick={() =>
+                editValueComponent(
+                  "company_name",
+                  "Company",
+                  project?.company_name
+                )
+              }
+              className="hover:text-green-700"
+            />
+          </div>
+        </div>
+
+        <div className="w-full flex flex-row justify-between mb-5">
+          <div className="flex flex-row gap-3">
+            <div className="font-semibold text-gray-600">Version: </div>
+            <div className="font-bold">{project?.version}</div>
+          </div>
+        </div>
+      </div>
+    </React.Fragment>
+  );
+};
+
+const editImageComponent = (path, link) => {
+  MySwal.fire({
+    width: 700,
+    html: <ChangeImageModal img_path={path} link_image={link} />,
+    showConfirmButton: false,
+    showCloseButton: true,
+  });
+};
+
+const editValueComponent = (name, label, init) => {
+  return MySwal.fire({
+    width: 700,
+    html: <ChangeValueModal name={name} label={label} init={init} />,
     showConfirmButton: false,
     showCloseButton: true,
   });

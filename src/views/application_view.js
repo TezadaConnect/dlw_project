@@ -10,9 +10,10 @@ import { useSelector } from "react-redux";
 const ApplicationView = () => {
   const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const { project } = useSelector((state) => state.response);
   return (
     <React.Fragment>
-      <NavbarComponent title="DLW SYSTEM APPLICATIONS" />
+      <NavbarComponent title={project?.app_name + " SYSTEM APPLICATIONS"} />
 
       <div className="flex lg:flex-row gap-4 mt-5 mx-5">
         {itemHolder?.map((item, key) => {

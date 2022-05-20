@@ -3,6 +3,7 @@ import { MdLogout } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import useAuthHook, { useCheckLogin } from "../../helpers/hooks/useAuthHook";
+import { useGetAppSetting } from "../../helpers/hooks/useStartDepHooks";
 import { setUser } from "../../redux/slice/user_slice";
 
 const NavbarComponent = ({ title = "DLW SYSTEM" }) => {
@@ -10,6 +11,7 @@ const NavbarComponent = ({ title = "DLW SYSTEM" }) => {
   const { logout } = useAuthHook();
   const dispatch = useDispatch();
   const nagivate = useNavigate();
+  useGetAppSetting();
   useCheckLogin();
   return (
     <React.Fragment>

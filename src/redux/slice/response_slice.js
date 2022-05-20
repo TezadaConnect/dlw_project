@@ -5,6 +5,7 @@ export const responseSlice = createSlice({
   initialState: {
     loading: false,
     refresh: true,
+    project: null,
   },
   reducers: {
     setBusy: (state, action) => {
@@ -13,9 +14,13 @@ export const responseSlice = createSlice({
     setRefresh: (state) => {
       state.refresh = !state.refresh;
     },
+
+    setProject: (state, action) => {
+      state.project = action.payload;
+    },
   },
 });
 
-export const { setBusy, setRefresh } = responseSlice.actions;
+export const { setBusy, setRefresh, setProject } = responseSlice.actions;
 
 export default responseSlice.reducer;

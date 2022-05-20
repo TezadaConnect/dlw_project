@@ -6,6 +6,7 @@ import NavbarComponent from "../components/common/navbar_component";
 import { errorPopup } from "../components/common/response_component";
 import SidebarComponent from "../components/common/sidebar_component";
 import { DragableElements } from "../components/services_components";
+import { useGetPickupUpdate } from "../helpers/hooks/useStartDepHooks";
 import {
   setPickUpData,
   setWalkInData,
@@ -319,6 +320,8 @@ const ServicePickup = () => {
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refresh]);
+
+  useGetPickupUpdate();
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>

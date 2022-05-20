@@ -1,15 +1,17 @@
 import { useFormik } from "formik";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { InputComponent } from "../../components/common/input_component";
 import * as Yup from "yup";
-import logo from "../../assets/img/logo.png";
+import ReactLoading from "react-loading";
 import useAuthHook from "../../helpers/hooks/useAuthHook";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import AppSettingService from "../../services/app_setting_services";
 
 const LoginView = () => {
   const { login } = useAuthHook();
   const { user } = useSelector((state) => state.user);
+  const [data, setData] = useState(null);
   const navigate = useNavigate();
 
   const loginFormik = useFormik({
@@ -30,6 +32,9 @@ const LoginView = () => {
   });
 
   useEffect(() => {
+    AppSettingService.getAppSettingsInfo().then((res) => {
+      setData(res);
+    });
     if (user !== null) {
       navigate("/home", { replace: true });
     }
@@ -42,11 +47,22 @@ const LoginView = () => {
         <div className="w-1/4  mt-20 mx-auto rounded p-5 flex lg:flex-row flex-col justify-between flex-grow">
           <div className="flex flex-grow flex-col">
             <div className="flex justify-center">
-              <img
-                src={logo}
-                className="mb-10 w-48 text-center"
-                alt="dlw-logo"
-              />
+              {data === null ? (
+                <div className="mx-auto my-5 flex justify-center items-center">
+                  <ReactLoading
+                    type={"spinningBubbles"}
+                    color={"black"}
+                    height={50}
+                    width={50}
+                  />{" "}
+                </div>
+              ) : (
+                <img
+                  src={data?.img_url}
+                  className="mb-10 w-48 text-center"
+                  alt="dlw-logo"
+                />
+              )}
             </div>
             <InputComponent
               name="email"
