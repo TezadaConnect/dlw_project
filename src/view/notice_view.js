@@ -51,9 +51,6 @@ const NoticeView = () => {
             REJECTED
           </Text>
         </Layout>
-        <Button style={{ margin: 15 }} onPress={() => toServices()}>
-          <Text>RETURN TO SERVICE MENU</Text>
-        </Button>
       </Layout>
     </SafeAreaView>
   );

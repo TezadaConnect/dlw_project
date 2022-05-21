@@ -17,6 +17,7 @@ import StatusView from "../view/status_view";
 import {
   useGetCurrentRequest,
   useGetProducts,
+  useGetTimer,
   useGetTopProducts,
 } from "../helper/hooks/use_start_dep_hooks";
 
@@ -48,6 +49,7 @@ const AppRoute = () => {
   useGetProducts();
   useGetCurrentRequest();
   useGetTopProducts();
+  useGetTimer();
 
   return (
     <React.Fragment>

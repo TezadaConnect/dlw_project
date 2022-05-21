@@ -100,7 +100,6 @@ const useAuthHook = () => {
       dispatch(setBusy(true));
       await AuthService.readAgreement(user.id)
         .then((res) => {
-          console.log(res);
           if (res === false) {
             next.reset({ index: 0, routes: [{ name: "Terms" }] });
           }

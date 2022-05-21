@@ -52,9 +52,17 @@ const getTopTopProductBaseRequest = async () => {
   console.log(arrHolder);
 };
 
+const addFiveMunitesDelay = async (id) => {
+  const dataSaver = new Date();
+  await updateDoc(doc(PICKUP_QUERY, id), {
+    release_date: new Date(dataSaver.getTime() + 1000 * 60 * 5),
+  });
+};
+
 const RequestService = {
   requestStatusModify,
   createNewRequest,
   getTopTopProductBaseRequest,
+  addFiveMunitesDelay,
 };
 export default RequestService;

@@ -40,7 +40,6 @@ const HomeView = () => {
             accessoryRight={MenuAction}
             title={() => <Text category="h6">Services</Text>}
           />
-          {console.log(time)}
           {product?.length !== 0 && (
             <ScrollView
               scrollEnabled={true}

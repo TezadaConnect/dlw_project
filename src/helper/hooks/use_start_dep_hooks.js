@@ -87,17 +87,21 @@ export const useGetCurrentRequest = () => {
   }, [user]);
 };
 
-export const useGetTimer = () => {
-  const { currentRequest, time } = useSelector((state) => state.product);
+export const useGetTimer = async () => {
+  const { currentRequest } = useSelector((state) => state.product);
   const { refresh } = useSelector((state) => state.response);
   const dispatch = useDispatch();
+
   useEffect(() => {
+    const date2 = new Date(currentRequest?.release_date?.toDate()) ?? null;
     const date1 = new Date();
-    const date2 = new Date(currentRequest?.release_date?.toDate());
-    const countdownSeconds = Math.abs(date1 - date2) / 1000;
-    console.log(countdownSeconds);
-    dispatch(setTime(countdownSeconds));
-  }, [refresh]);
+    const dataTime = date2.getTime() / 1000 - date1.getTime() / 1000;
+
+    if (!isNaN(dataTime) && currentRequest?.release_date?.toDate() !== null) {
+      console.log(dataTime);
+      dispatch(setTime(dataTime));
+    }
+  }, [currentRequest, refresh]);
 };
 
 export const useGetAppSetting = () => {

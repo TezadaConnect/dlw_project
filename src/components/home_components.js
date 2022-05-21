@@ -10,23 +10,21 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { showMessage } from "react-native-flash-message";
+import { setRefresh } from "../redux/slices/response_slice";
 
-export const ProductCardComponent = ({
-  title,
-  imgUrl,
-  id,
-  reference,
-  onClickStatus = () => {},
-}) => {
+export const ProductCardComponent = ({ title, imgUrl, id, reference }) => {
   const dispatch = useDispatch();
   const onOpen = () => {
-    reference.current?.open();
-    showMessage({
-      message: "Action Denied",
-      description: "You currently have a request",
-      type: "danger",
-      icon: "danger",
-    });
+    setTimeout(() => {
+      reference.current?.open();
+      showMessage({
+        message: "Action Denied",
+        description: "You currently have a request",
+        type: "danger",
+        icon: "danger",
+      });
+    }, 200);
+    dispatch(setRefresh());
   };
 
   const next = useNavigation();
@@ -40,17 +38,15 @@ export const ProductCardComponent = ({
     if (currentRequest?.status === "REJECT")
       return next.navigate("Acquire", { itemId: id });
 
+    if (currentRequest === null)
+      return next.navigate("Acquire", { itemId: id });
+
     onOpen();
   };
 
   return (
     <React.Fragment>
-      <TouchableOpacity
-        onPress={() => {
-          onClickStatus();
-          navigateToRequire();
-        }}
-      >
+      <TouchableOpacity onPress={() => navigateToRequire()}>
         <Layout style={style.cardProdLayout}>
           <ImageBackground
             source={{
@@ -94,22 +90,19 @@ export const ProductCardComponent = ({
   );
 };
 
-export const TopProductCardComponent = ({
-  count,
-  title,
-  id,
-  reference,
-  onClickStatus = () => {},
-}) => {
+export const TopProductCardComponent = ({ count, title, id, reference }) => {
   const dispatch = useDispatch();
   const onOpen = () => {
-    reference.current?.open();
-    showMessage({
-      message: "Action Denied",
-      description: "You currently have a request",
-      type: "danger",
-      icon: "danger",
-    });
+    setTimeout(() => {
+      reference.current?.open();
+      showMessage({
+        message: "Action Denied",
+        description: "You currently have a request",
+        type: "danger",
+        icon: "danger",
+      });
+    }, 200);
+    dispatch(setRefresh());
   };
 
   const next = useNavigation();
@@ -123,18 +116,15 @@ export const TopProductCardComponent = ({
     if (currentRequest?.status === "REJECT")
       return next.navigate("Acquire", { itemId: id });
 
+    if (currentRequest === null)
+      return next.navigate("Acquire", { itemId: id });
+
     onOpen();
   };
 
   return (
     <React.Fragment>
-      <Card
-        style={style.cardTopProdLayout}
-        onPress={() => {
-          onClickStatus();
-          navigateToRequire();
-        }}
-      >
+      <Card style={style.cardTopProdLayout} onPress={() => navigateToRequire()}>
         <Layout
           style={{
             display: "flex",

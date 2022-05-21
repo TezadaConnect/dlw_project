@@ -7,9 +7,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { PulseIndicator } from "react-native-indicators";
 import CountDown from "react-native-countdown-component";
 import { showMessage } from "react-native-flash-message";
-import { setCurrentRequest } from "../../redux/slices/product_slice";
+import { setCurrentRequest, setTime } from "../../redux/slices/product_slice";
 import { useGetTimer } from "../../helper/hooks/use_start_dep_hooks";
 import { setRefresh } from "../../redux/slices/response_slice";
+import RequestService from "../../service/request_service";
 
 const { height } = Dimensions.get("screen");
 const modalHeight = height * 0.5;
@@ -39,8 +40,8 @@ const PICKUP = [
 
 const BottomSheetComponent = ({ modalRef }) => {
   const { currentRequest, time } = useSelector((state) => state.product);
-  const dispatch = useDispatch();
   const [counter, setCounter] = useState(0);
+  const dispatch = useDispatch();
 
   const onClose = () => {
     modalRef.current?.close();
@@ -74,6 +75,7 @@ const BottomSheetComponent = ({ modalRef }) => {
     if (stateOfItem === PICKUP[8]) return setCounter(3);
     if (stateOfItem === PICKUP[9]) return setCounter(4);
     if (stateOfItem === PICKUP[2]) return setCounter(5);
+
     return setCounter(2);
   }, [currentRequest?.status ?? null]);
 
@@ -176,19 +178,40 @@ const BottomSheetComponent = ({ modalRef }) => {
                   </Layout>
                 </Layout>
 
-                <CountDown
-                  digitStyle={{ backgroundColor: "#FFF" }}
-                  until={time}
-                  onFinish={() => {
-                    showMessage({
-                      message: "Service done!",
-                      icon: "success",
-                      type: "success",
-                    });
-                  }}
-                  onChange={(e) => {}}
-                  size={20}
-                />
+                {counter !== 4 ? (
+                  <CountDown
+                    digitStyle={{ backgroundColor: "#FFF" }}
+                    until={time}
+                    onFinish={() => {
+                      if (counter !== 4) {
+                        RequestService.addFiveMunitesDelay(currentRequest?.id);
+                        dispatch(setRefresh());
+                        return showMessage({
+                          message: "Service was Delayed!",
+                          icon: "danger",
+                          type: "danger",
+                        });
+                      }
+                      showMessage({
+                        message: "Service done!",
+                        icon: "success",
+                        type: "success",
+                      });
+                    }}
+                    onChange={(e) => {}}
+                    size={20}
+                  />
+                ) : (
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      textAlign: "center",
+                      fontSize: 25,
+                    }}
+                  >
+                    ITEM DELIVERED!
+                  </Text>
+                )}
               </Layout>
             </Layout>
           )}
@@ -197,7 +220,6 @@ const BottomSheetComponent = ({ modalRef }) => {
             onPress={() => {
               onClose();
               setCounter(0);
-              dispatch(setRefresh());
             }}
           >
             Close

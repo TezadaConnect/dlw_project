@@ -4,6 +4,7 @@ import {
   Layout,
   Icon,
   TopNavigationAction,
+  Button,
 } from "@ui-kitten/components";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -12,9 +13,10 @@ import { layouts } from "../helper/styles";
 import { PulseIndicator } from "react-native-indicators";
 import CountDown from "react-native-countdown-component";
 import { showMessage } from "react-native-flash-message";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { useGetTimer } from "../helper/hooks/use_start_dep_hooks";
+import RequestService from "../service/request_service";
 
 const setChangesForRemainingDate = (value) => {
   let title = "";
@@ -42,6 +44,7 @@ const PICKUP = [
 const StatusView = () => {
   const { currentRequest, time } = useSelector((state) => state.product);
   const [counter, setCounter] = useState(0);
+  const dispatch = useDispatch();
   const [title, setTitle] = useState("Waiting for response");
   const colorValue = {
     indi1: counter >= 0 ? "#2ecc71" : "#d68f98",
@@ -72,8 +75,6 @@ const StatusView = () => {
     if (stateOfItem === PICKUP[2]) return setCounter(5);
     return setCounter(2);
   }, [currentRequest?.status ?? null]);
-
-  useGetTimer();
 
   return (
     <SafeAreaView>
@@ -191,19 +192,40 @@ const StatusView = () => {
                 </Layout>
               </Layout>
 
-              <CountDown
-                digitStyle={{ backgroundColor: "#FFF" }}
-                until={time}
-                onFinish={() => {
-                  showMessage({
-                    message: "Service done!",
-                    icon: "success",
-                    type: "success",
-                  });
-                }}
-                onChange={(e) => {}}
-                size={86400}
-              />
+              {counter !== 4 ? (
+                <CountDown
+                  digitStyle={{ backgroundColor: "#FFF" }}
+                  until={time}
+                  onFinish={() => {
+                    if (counter !== 4) {
+                      RequestService.addFiveMunitesDelay(currentRequest?.id);
+                      dispatch(setRefresh());
+                      return showMessage({
+                        message: "Service was Delayed!",
+                        icon: "danger",
+                        type: "danger",
+                      });
+                    }
+                    showMessage({
+                      message: "Service done!",
+                      icon: "success",
+                      type: "success",
+                    });
+                  }}
+                  onChange={(e) => {}}
+                  size={20}
+                />
+              ) : (
+                <Text
+                  style={{
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    fontSize: 25,
+                  }}
+                >
+                  ITEM DELIVERED!
+                </Text>
+              )}
             </Layout>
           )}
         </Layout>
