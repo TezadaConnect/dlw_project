@@ -43,32 +43,36 @@ const readRequest = async (is_walk = true) => {
 
   try {
     snap?.forEach(async (item) => {
-      if (item.data().table === tableEnum.request) {
-        request?.push({
-          id: item?.id,
-          price: item?.data()?.price,
-          content: serviceContent(item?.data()?.service_type) + " Service",
-          service_id: item?.data()?.service_type,
-          status: item?.data().status,
-        });
-      }
-      if (item.data().table === tableEnum.clean) {
-        clean?.push({
-          id: item?.id,
-          price: item?.data()?.price,
-          content: serviceContent(item?.data()?.service_type),
-          service_id: item?.data()?.service_type,
-          status: item?.data().status,
-        });
-      }
-      if (item.data().table === tableEnum.done) {
-        done?.push({
-          id: item?.id,
-          price: item?.data()?.price,
-          content: serviceContent(item?.data()?.service_type),
-          service_id: item?.data()?.service_type,
-          status: item?.data().status,
-        });
+      if (item.data().status !== "REJECT") {
+        if (!item.data().recieve_date) {
+          if (item.data().table === tableEnum.request) {
+            request?.push({
+              id: item?.id,
+              price: item?.data()?.price,
+              content: serviceContent(item?.data()?.service_type) + " Service",
+              service_id: item?.data()?.service_type,
+              status: item?.data().status,
+            });
+          }
+          if (item.data().table === tableEnum.clean) {
+            clean?.push({
+              id: item?.id,
+              price: item?.data()?.price,
+              content: serviceContent(item?.data()?.service_type),
+              service_id: item?.data()?.service_type,
+              status: item?.data().status,
+            });
+          }
+          if (item.data().table === tableEnum.done) {
+            done?.push({
+              id: item?.id,
+              price: item?.data()?.price,
+              content: serviceContent(item?.data()?.service_type),
+              service_id: item?.data()?.service_type,
+              status: item?.data().status,
+            });
+          }
+        }
       }
     });
     return { request: request, clean: clean, done: done };
@@ -93,7 +97,7 @@ const requestStatusModify = async (id, status, is_walk = true) => {
 
   if (status === "DONE") {
     return await updateDoc(doc(QUERY, id), {
-      release_date: date,
+      recieve_date: date,
       status: status_cap,
       updated_at: date,
     });
