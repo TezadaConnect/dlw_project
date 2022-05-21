@@ -14,6 +14,7 @@ import CountDown from "react-native-countdown-component";
 import { showMessage } from "react-native-flash-message";
 import { useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
+import { useGetTimer } from "../helper/hooks/use_start_dep_hooks";
 
 const setChangesForRemainingDate = (value) => {
   let title = "";
@@ -39,9 +40,8 @@ const PICKUP = [
 ];
 
 const StatusView = () => {
-  const { currentRequest } = useSelector((state) => state.product);
+  const { currentRequest, time } = useSelector((state) => state.product);
   const [counter, setCounter] = useState(0);
-  const next = useNavigation();
   const [title, setTitle] = useState("Waiting for response");
   const colorValue = {
     indi1: counter >= 0 ? "#2ecc71" : "#d68f98",
@@ -72,6 +72,8 @@ const StatusView = () => {
     if (stateOfItem === PICKUP[2]) return setCounter(5);
     return setCounter(2);
   }, [currentRequest?.status ?? null]);
+
+  useGetTimer();
 
   return (
     <SafeAreaView>
@@ -191,7 +193,7 @@ const StatusView = () => {
 
               <CountDown
                 digitStyle={{ backgroundColor: "#FFF" }}
-                until={20}
+                until={time}
                 onFinish={() => {
                   showMessage({
                     message: "Service done!",
@@ -200,7 +202,7 @@ const StatusView = () => {
                   });
                 }}
                 onChange={(e) => {}}
-                size={20}
+                size={86400}
               />
             </Layout>
           )}

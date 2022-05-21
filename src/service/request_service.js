@@ -4,8 +4,6 @@ import {
   doc,
   getDocs,
   updateDoc,
-  query,
-  where,
 } from "firebase/firestore";
 import { firestore } from "../config/firebase_config";
 
@@ -44,8 +42,19 @@ const createNewRequest = async (value) => {
   });
 };
 
+const getTopTopProductBaseRequest = async () => {
+  const snap = await getDocs(PICKUP_QUERY);
+  const arrHolder = [];
+  snap.forEach((element) => {
+    arrHolder.push({ id: element.id, ...element.data() });
+  });
+
+  console.log(arrHolder);
+};
+
 const RequestService = {
   requestStatusModify,
   createNewRequest,
+  getTopTopProductBaseRequest,
 };
 export default RequestService;

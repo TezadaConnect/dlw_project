@@ -10,22 +10,24 @@ import {
 import React, { useRef } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useAuthHook from "../helper/hooks/auth_hook";
-import { StyleSheet } from "react-native";
+import { StyleSheet, TouchableWithoutFeedback } from "react-native";
 import {
   ProductCardComponent,
   TopProductCardComponent,
 } from "../components/home_components";
 import { layouts } from "../helper/styles";
 import { ScrollView } from "react-native-gesture-handler";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import BottomSheetComponent from "../components/common/bottom-sheet";
 import { PortalProvider } from "@gorhom/portal";
+import { setRefresh } from "../redux/slices/response_slice";
 
 const HomeView = () => {
   const next = useNavigation();
   const { checkAgreement } = useAuthHook();
-  const { product } = useSelector((state) => state.product);
-
+  const { product, topProduct } = useSelector((state) => state.product);
+  const dispatch = useDispatch();
+  const { currentRequest, time } = useSelector((state) => state.product);
   checkAgreement();
 
   const modalRef = useRef(null);
@@ -38,6 +40,7 @@ const HomeView = () => {
             accessoryRight={MenuAction}
             title={() => <Text category="h6">Services</Text>}
           />
+          {console.log(time)}
           {product?.length !== 0 && (
             <ScrollView
               scrollEnabled={true}
@@ -62,9 +65,17 @@ const HomeView = () => {
 
           <Text style={{ fontWeight: "bold", margin: 10 }}>Top 3 Services</Text>
           <Layout style={{ margin: 5 }}>
-            <TopProductCardComponent reference={modalRef} />
-            <TopProductCardComponent reference={modalRef} />
-            <TopProductCardComponent reference={modalRef} />
+            {topProduct.map((item, key) => {
+              return (
+                <TopProductCardComponent
+                  key={key}
+                  count={key}
+                  title={item?.service_name}
+                  id={item?.id}
+                  reference={modalRef}
+                />
+              );
+            })}
           </Layout>
         </Layout>
 

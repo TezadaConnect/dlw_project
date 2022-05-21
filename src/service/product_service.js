@@ -63,7 +63,6 @@ const getAllProduct = async () => {
 
 const updateProduct = async (id, values, file) => {
   const { service_name, platform, rate, desc, img_path } = values;
-  console.log(img_path);
   try {
     if (file !== null) {
       const PRODDUC_DEL_REF = ref(storage, img_path);

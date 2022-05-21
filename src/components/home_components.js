@@ -2,13 +2,23 @@ import { Card, Icon, Layout, Text } from "@ui-kitten/components";
 import { StyleSheet } from "react-native";
 import React from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import { TouchableOpacity, ImageBackground } from "react-native";
+import {
+  TouchableWithoutFeedback,
+  TouchableOpacity,
+  ImageBackground,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { showMessage } from "react-native-flash-message";
-import { setCurrentRequest } from "../redux/slices/product_slice";
 
-export const ProductCardComponent = ({ title, imgUrl, id, reference }) => {
+export const ProductCardComponent = ({
+  title,
+  imgUrl,
+  id,
+  reference,
+  onClickStatus = () => {},
+}) => {
+  const dispatch = useDispatch();
   const onOpen = () => {
     reference.current?.open();
     showMessage({
@@ -18,23 +28,29 @@ export const ProductCardComponent = ({ title, imgUrl, id, reference }) => {
       icon: "danger",
     });
   };
-  const dispatch = useDispatch();
 
   const next = useNavigation();
+
   const { currentRequest } = useSelector((state) => state.product);
+
   const navigateToRequire = () => {
-    if (
-      currentRequest?.status === "DONE" ||
-      currentRequest?.status === "REJECT"
-    ) {
+    if (currentRequest?.status === "DONE")
       return next.navigate("Acquire", { itemId: id });
-    }
+
+    if (currentRequest?.status === "REJECT")
+      return next.navigate("Acquire", { itemId: id });
+
     onOpen();
   };
 
   return (
     <React.Fragment>
-      <TouchableOpacity onPress={navigateToRequire}>
+      <TouchableOpacity
+        onPress={() => {
+          onClickStatus();
+          navigateToRequire();
+        }}
+      >
         <Layout style={style.cardProdLayout}>
           <ImageBackground
             source={{
@@ -78,29 +94,47 @@ export const ProductCardComponent = ({ title, imgUrl, id, reference }) => {
   );
 };
 
-export const TopProductCardComponent = ({ id, reference }) => {
-  const next = useNavigation();
-  const { currentRequest } = useSelector((state) => state.product);
-  const navigateToRequire = () => {
-    if (currentRequest !== null) {
-      onOpen();
-      showMessage({
-        message: "Action Denied",
-        description: "You currently have a request",
-        type: "danger",
-        icon: "danger",
-      });
-      return null;
-    }
-    next.navigate("Acquire", { itemId: id });
-  };
-
+export const TopProductCardComponent = ({
+  count,
+  title,
+  id,
+  reference,
+  onClickStatus = () => {},
+}) => {
+  const dispatch = useDispatch();
   const onOpen = () => {
     reference.current?.open();
+    showMessage({
+      message: "Action Denied",
+      description: "You currently have a request",
+      type: "danger",
+      icon: "danger",
+    });
   };
+
+  const next = useNavigation();
+
+  const { currentRequest } = useSelector((state) => state.product);
+
+  const navigateToRequire = () => {
+    if (currentRequest?.status === "DONE")
+      return next.navigate("Acquire", { itemId: id });
+
+    if (currentRequest?.status === "REJECT")
+      return next.navigate("Acquire", { itemId: id });
+
+    onOpen();
+  };
+
   return (
     <React.Fragment>
-      <Card style={style.cardTopProdLayout} onPress={navigateToRequire}>
+      <Card
+        style={style.cardTopProdLayout}
+        onPress={() => {
+          onClickStatus();
+          navigateToRequire();
+        }}
+      >
         <Layout
           style={{
             display: "flex",
@@ -109,7 +143,9 @@ export const TopProductCardComponent = ({ id, reference }) => {
             backgroundColor: "transparent",
           }}
         >
-          <Text style={{ fontWeight: "bold" }}>{1}. Lorem ipsum card</Text>
+          <Text style={{ fontWeight: "bold" }}>
+            {count + 1}. {title}
+          </Text>
           <Icon
             style={{ width: 20, height: 20 }}
             fill="#8F9BB3"

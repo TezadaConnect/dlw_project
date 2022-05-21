@@ -11,9 +11,12 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 
 import useAuthHook from "../../helper/hooks/auth_hook";
+import { useSelector } from "react-redux";
+import { useGetAppSetting } from "../../helper/hooks/use_start_dep_hooks";
 
 const LoginView = () => {
   const next = useNavigation();
+  const { project } = useSelector((state) => state.response);
   const { login, checkUser } = useAuthHook();
 
   const loginForm = useFormik({
@@ -30,6 +33,7 @@ const LoginView = () => {
     },
   });
 
+  useGetAppSetting();
   checkUser();
 
   return (
@@ -42,7 +46,7 @@ const LoginView = () => {
         <Layout style={layouts.padding}>
           <Layout style={style.imgLayout}>
             <Image
-              source={require("../../../assets/img/logo.png")}
+              source={{ uri: project?.img_url }}
               resizeMode="contain"
               style={style.imgStyle}
             />

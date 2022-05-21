@@ -17,6 +17,7 @@ import StatusView from "../view/status_view";
 import {
   useGetCurrentRequest,
   useGetProducts,
+  useGetTopProducts,
 } from "../helper/hooks/use_start_dep_hooks";
 
 const Stack = createNativeStackNavigator();
@@ -46,6 +47,7 @@ const AppRoute = () => {
 
   useGetProducts();
   useGetCurrentRequest();
+  useGetTopProducts();
 
   return (
     <React.Fragment>

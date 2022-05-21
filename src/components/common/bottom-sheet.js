@@ -8,6 +8,8 @@ import { PulseIndicator } from "react-native-indicators";
 import CountDown from "react-native-countdown-component";
 import { showMessage } from "react-native-flash-message";
 import { setCurrentRequest } from "../../redux/slices/product_slice";
+import { useGetTimer } from "../../helper/hooks/use_start_dep_hooks";
+import { setRefresh } from "../../redux/slices/response_slice";
 
 const { height } = Dimensions.get("screen");
 const modalHeight = height * 0.5;
@@ -36,15 +38,13 @@ const PICKUP = [
 ];
 
 const BottomSheetComponent = ({ modalRef }) => {
+  const { currentRequest, time } = useSelector((state) => state.product);
+  const dispatch = useDispatch();
+  const [counter, setCounter] = useState(0);
+
   const onClose = () => {
     modalRef.current?.close();
   };
-
-  const { currentRequest } = useSelector((state) => state.product);
-
-  const [counter, setCounter] = useState(0);
-
-  const dispatch = useDispatch();
 
   const [title, setTitle] = useState("Waiting for response");
   const colorValue = {
@@ -76,6 +76,8 @@ const BottomSheetComponent = ({ modalRef }) => {
     if (stateOfItem === PICKUP[2]) return setCounter(5);
     return setCounter(2);
   }, [currentRequest?.status ?? null]);
+
+  useGetTimer();
 
   return (
     <Portal>
@@ -176,7 +178,7 @@ const BottomSheetComponent = ({ modalRef }) => {
 
                 <CountDown
                   digitStyle={{ backgroundColor: "#FFF" }}
-                  until={20}
+                  until={time}
                   onFinish={() => {
                     showMessage({
                       message: "Service done!",
@@ -184,9 +186,7 @@ const BottomSheetComponent = ({ modalRef }) => {
                       type: "success",
                     });
                   }}
-                  onChange={(e) => {
-                    // if (e === 15) setCounter(1);
-                  }}
+                  onChange={(e) => {}}
                   size={20}
                 />
               </Layout>
@@ -195,7 +195,9 @@ const BottomSheetComponent = ({ modalRef }) => {
 
           <Button
             onPress={() => {
-              onClose(), setCounter(0);
+              onClose();
+              setCounter(0);
+              dispatch(setRefresh());
             }}
           >
             Close
