@@ -52,6 +52,7 @@ const readRequest = async (is_walk = true) => {
               content: serviceContent(item?.data()?.service_type) + " Service",
               service_id: item?.data()?.service_type,
               status: item?.data().status,
+              user_id: item?.data().user_id,
             });
           }
           if (item.data().table === tableEnum.clean) {
@@ -61,6 +62,7 @@ const readRequest = async (is_walk = true) => {
               content: serviceContent(item?.data()?.service_type),
               service_id: item?.data()?.service_type,
               status: item?.data().status,
+              user_id: item?.data().user_id,
             });
           }
           if (item.data().table === tableEnum.done) {
@@ -70,6 +72,7 @@ const readRequest = async (is_walk = true) => {
               content: serviceContent(item?.data()?.service_type),
               service_id: item?.data()?.service_type,
               status: item?.data().status,
+              user_id: item?.data().user_id,
             });
           }
         }

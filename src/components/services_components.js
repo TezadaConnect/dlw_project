@@ -137,6 +137,7 @@ const ItemCard = ({ item, index, is_walk = true, req_id }) => {
                   className="font-bold text-red-900 hover:text-red-600 active:translate-y-1"
                   onClick={() =>
                     updateStatus(
+                      item.user_id,
                       req_id,
                       item.status,
                       is_walk,
@@ -173,6 +174,7 @@ const ItemCard = ({ item, index, is_walk = true, req_id }) => {
 };
 
 const updateStatus = (
+  user_id,
   req_id,
   status,
   is_walk,
@@ -182,6 +184,7 @@ const updateStatus = (
   MySwal.fire({
     html: (
       <UpdateStatusModal
+        user_id={user_id}
         id={req_id}
         value={status}
         is_walk={is_walk}
