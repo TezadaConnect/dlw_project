@@ -6,6 +6,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { firestore } from "../config/firebase_config";
+import axios from "axios";
 
 export const PICKUP_QUERY = collection(firestore, "pickup_request");
 
@@ -40,6 +41,16 @@ const createNewRequest = async (value) => {
     release_date: release_date,
     create_at: date,
   });
+
+  await axios
+    .post("https://app.nativenotify.com/api/indie/notification", {
+      subID: user_id,
+      appId: 2746,
+      appToken: "33W2w1mWUguk3y6DPPFDWL",
+      title: "Your Item is listed as Pending!",
+      message: "Please wait for the staff to accept your Request!",
+    })
+    .catch((err) => console.log(err.message));
 };
 
 const getTopTopProductBaseRequest = async () => {

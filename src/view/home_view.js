@@ -7,30 +7,28 @@ import {
   Icon,
   Button,
 } from "@ui-kitten/components";
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useAuthHook from "../helper/hooks/auth_hook";
-import { StyleSheet, TouchableWithoutFeedback } from "react-native";
+import { StyleSheet } from "react-native";
 import {
   ProductCardComponent,
   TopProductCardComponent,
 } from "../components/home_components";
 import { layouts } from "../helper/styles";
 import { ScrollView } from "react-native-gesture-handler";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import BottomSheetComponent from "../components/common/bottom-sheet";
 import { PortalProvider } from "@gorhom/portal";
-import { setRefresh } from "../redux/slices/response_slice";
+import { getUnreadIndieNotificationInboxCount } from "native-notify";
 
 const HomeView = () => {
-  const next = useNavigation();
   const { checkAgreement } = useAuthHook();
   const { product, topProduct } = useSelector((state) => state.product);
-  const dispatch = useDispatch();
-  const { currentRequest, time } = useSelector((state) => state.product);
-  checkAgreement();
 
   const modalRef = useRef(null);
+
+  checkAgreement();
 
   return (
     <SafeAreaView>
@@ -111,7 +109,42 @@ const MenuAction = () => {
   );
 };
 
-const BellIcon = (props) => <Icon {...props} name="bell" />;
+const BellIcon = (props) => {
+  const { user } = useSelector((state) => state.user);
+  const { refresh } = useSelector((state) => state.response);
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
+
+  useEffect(async () => {
+    let unreadCount = await getUnreadIndieNotificationInboxCount(
+      user?.id,
+      2746,
+      "33W2w1mWUguk3y6DPPFDWL"
+    );
+    setUnreadNotificationCount(unreadCount);
+  }, [refresh]);
+
+  return (
+    <React.Fragment>
+      <Layout style={{ position: "relative" }}>
+        <Icon {...props} name="bell" />
+        {unreadNotificationCount !== 0 ? (
+          <Layout
+            style={{
+              height: 10,
+              width: 10,
+              backgroundColor: "#EB212E",
+              borderRadius: 50,
+              position: "absolute",
+              top: -1,
+              right: 0,
+            }}
+          />
+        ) : null}
+      </Layout>
+    </React.Fragment>
+  );
+};
+
 const Logout = (props) => <Icon {...props} name="log-out-outline" />;
 
 const style = StyleSheet.create({

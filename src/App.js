@@ -7,8 +7,11 @@ import AppRoute from "./router/app_route";
 import * as eva from "@eva-design/eva";
 import { LoadingScreen } from "./components/common/loading_screen";
 import FlashMessage from "react-native-flash-message";
+import registerNNPushToken from "native-notify";
 
 export default function App() {
+  registerNNPushToken(2746, "33W2w1mWUguk3y6DPPFDWL");
+
   return (
     <Provider store={store}>
       <IconRegistry icons={EvaIconsPack} />

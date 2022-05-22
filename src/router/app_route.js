@@ -20,12 +20,15 @@ import {
   useGetTimer,
   useGetTopProducts,
 } from "../helper/hooks/use_start_dep_hooks";
+import { registerIndieID } from "native-notify";
 
 const Stack = createNativeStackNavigator();
 
 const AppRoute = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
+
+  registerIndieID(user?.id, 2746, "33W2w1mWUguk3y6DPPFDWL");
 
   useEffect(async () => {
     dispatch(setBusy(true));
