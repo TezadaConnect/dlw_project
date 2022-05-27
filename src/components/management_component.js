@@ -17,6 +17,7 @@ import CreateServiceModal from "./modals/create_service_modal";
 import { creationTypeEnum } from "../helpers/constant";
 import ProductService from "../services/product_service";
 import FinanceService from "../services/finance_service";
+import { useSelector } from "react-redux";
 
 const MySwal = withReactContent(Swal);
 
@@ -235,9 +236,14 @@ export const GraphDisplay = ({ board, setBoard }) => {
 };
 
 export const ProductServiceCard = ({ item }) => {
+  const { user } = useSelector((state) => state.user);
   return (
     <React.Fragment>
-      <div onClick={() => editServiceModal(item?.id, item?.data?.img_path)}>
+      <div
+        onClick={() =>
+          editServiceModal(item?.id, item?.data?.img_path, user?.id)
+        }
+      >
         <div className="shadow-md border rounded cursor-pointer transition delay-75 hover:scale-105">
           <div>
             <img
@@ -255,7 +261,7 @@ export const ProductServiceCard = ({ item }) => {
   );
 };
 
-const editServiceModal = (id, path) => {
+const editServiceModal = (id, path, moderator) => {
   MySwal.fire({
     title: "Wash Only Service",
     color: "black",
@@ -269,7 +275,11 @@ const editServiceModal = (id, path) => {
       MySwal.fire({
         width: 700,
         html: (
-          <CreateServiceModal prod_id={id} type={creationTypeEnum.update} />
+          <CreateServiceModal
+            prod_id={id}
+            type={creationTypeEnum.update}
+            moderator={moderator}
+          />
         ),
         showConfirmButton: false,
         showCloseButton: true,
@@ -277,7 +287,7 @@ const editServiceModal = (id, path) => {
     },
     preDeny: () => {
       Swal.close();
-      ProductService.deleteProduct(id, path);
+      ProductService.deleteProduct(id, path, moderator);
       MySwal.fire({
         icon: "success",
         title: "Delete Succesfully",

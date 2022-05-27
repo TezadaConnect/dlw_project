@@ -1,6 +1,6 @@
 import {
   collection,
-  setDoc,
+  addDoc,
   doc,
   getDoc,
   getDocs,
@@ -14,12 +14,13 @@ import {
   deleteObject,
 } from "firebase/storage";
 import { firestore, storage } from "../config/firebase_config";
+import AuditTrailService, { ACTION_RECORD } from "./audit_trail_service";
 
 export const PRODUCT_QUERY = collection(firestore, "products");
 
 const createNewProduct = async (values, file = null) => {
   const imgName = Math.round(new Date() / 1000) + "-" + file.name ?? "file";
-  const { service_name, platform, rate, desc } = values;
+  const { service_name, platform, rate, desc, moderator } = values;
   let img_url = "";
 
   try {
@@ -28,7 +29,7 @@ const createNewProduct = async (values, file = null) => {
 
     await getDownloadURL(uploadImage.ref).then((url) => (img_url = url));
 
-    await setDoc(doc(PRODUCT_QUERY), {
+    const item = await addDoc(PRODUCT_QUERY, {
       service_name: service_name,
       platform: platform,
       rate: rate,
@@ -37,6 +38,12 @@ const createNewProduct = async (values, file = null) => {
       img_alt: service_name + " alt",
       img_path: PRODUCT_IMG_REF.fullPath,
     });
+
+    await AuditTrailService.addRecord(
+      moderator,
+      ACTION_RECORD[0],
+      `Created Product ${item.id}`
+    );
   } catch (error) {
     throw error;
   }
@@ -62,7 +69,7 @@ const getAllProduct = async () => {
 };
 
 const updateProduct = async (id, values, file) => {
-  const { service_name, platform, rate, desc, img_path } = values;
+  const { service_name, platform, rate, desc, img_path, moderator } = values;
   try {
     if (file !== null) {
       const PRODDUC_DEL_REF = ref(storage, img_path);
@@ -82,6 +89,11 @@ const updateProduct = async (id, values, file) => {
         img_path: PRODUCT_IMG_REF.fullPath,
       });
 
+      await AuditTrailService.addRecord(
+        moderator,
+        ACTION_RECORD[1],
+        `Updated Product ${id}`
+      );
       return "Success";
     }
 
@@ -92,6 +104,11 @@ const updateProduct = async (id, values, file) => {
         rate: rate,
         desc: desc,
       });
+      await AuditTrailService.addRecord(
+        moderator,
+        ACTION_RECORD[1],
+        `Updated Product ${id}`
+      );
       return "Success";
     }
 
@@ -101,11 +118,16 @@ const updateProduct = async (id, values, file) => {
   }
 };
 
-const deleteProduct = async (id, path) => {
+const deleteProduct = async (id, path, moderator) => {
   const PRODUCT_IMG_REF = ref(storage, path);
   try {
     await deleteObject(PRODUCT_IMG_REF);
     await deleteDoc(doc(PRODUCT_QUERY, id));
+    await AuditTrailService.addRecord(
+      moderator,
+      ACTION_RECORD[2],
+      `Removed Product ${id}`
+    );
   } catch (error) {
     throw new Error(error);
   }

@@ -77,6 +77,7 @@ const UpdateStatusModal = ({
   value,
   is_walk = true,
   isAdmin = false,
+  moderator,
 }) => {
   const list = is_walk ? REQUESTS_TYPE.walkin : REQUESTS_TYPE.pickup;
   const requestForm = useFormik({
@@ -88,10 +89,14 @@ const UpdateStatusModal = ({
       status: Yup.string().required("This field is required"),
     }),
     onSubmit: async (value) => {
-      await RequestService.requestStatusModify(id, value.status, is_walk)
+      await RequestService.requestStatusModify(
+        id,
+        value.status,
+        is_walk,
+        moderator
+      )
         .then(() => Swal.clickConfirm())
         .catch((err) => {
-          console.log(err.message);
           Swal.clickDeny();
         });
 
@@ -146,7 +151,7 @@ const UpdateStatusModal = ({
           list={isAdmin ? list : userList}
           name="status"
           label="Status Note"
-          placeholder="Select Role"
+          placeholder="Select status note"
           formik={requestForm}
         />
         <button

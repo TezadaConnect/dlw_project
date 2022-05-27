@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { useCheckUser } from "../helpers/hooks/useAuthHook";
+import { useGetProducts } from "../helpers/hooks/useStartDepHooks";
 import AdminView from "../views/admin_view";
 
 import ApplicationView from "../views/application_view";
@@ -10,6 +11,7 @@ import ServicesView from "../views/services_view";
 
 const AppRouter = () => {
   useCheckUser();
+  useGetProducts();
   return (
     <React.Fragment>
       <BrowserRouter>

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
-import { FaTruckPickup, FaWalking } from "react-icons/fa";
+import { FaTruckPickup, FaUser, FaWalking } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import NavbarComponent from "../components/common/navbar_component";
 import { errorPopup } from "../components/common/response_component";
 import SidebarComponent from "../components/common/sidebar_component";
 import { DragableElements } from "../components/services_components";
+import LatestCustomerTable from "../components/tables/latest_customer_table";
 import { useGetPickupUpdate } from "../helpers/hooks/useStartDepHooks";
 import {
   setPickUpData,
@@ -24,6 +25,11 @@ const sidebarItems = [
     value: 2,
     icon: <FaTruckPickup size={20} />,
   },
+  {
+    label: "Client Records",
+    value: 3,
+    icon: <FaUser size={20} />,
+  },
 ];
 
 const removeFromList = (list, index) => {
@@ -37,6 +43,7 @@ const addToList = (list, index, element) => {
   result.splice(index, 0, element);
   return result;
 };
+
 const ServicesView = () => {
   const [page, setPage] = useState(1);
   return (
@@ -51,6 +58,7 @@ const ServicesView = () => {
             <div>
               {page === 1 && <ServiceWalkin />}
               {page === 2 && <ServicePickup />}
+              {page === 3 && <ServiceClientRecord />}
             </div>
           </div>
         </div>
@@ -106,7 +114,9 @@ const ServiceWalkin = () => {
     ) {
       RequestService.requestTableModify(
         removedElement.id,
-        result.destination.droppableId
+        result.destination.droppableId,
+        true,
+        user.id
       );
       return dispatch(setWalkInData(listCopy));
     }
@@ -117,7 +127,9 @@ const ServiceWalkin = () => {
     ) {
       RequestService.requestTableModify(
         removedElement.id,
-        result.destination.droppableId
+        result.destination.droppableId,
+        true,
+        user.id
       );
       return dispatch(setWalkInData(listCopy));
     }
@@ -129,7 +141,9 @@ const ServiceWalkin = () => {
       ) {
         RequestService.requestTableModify(
           removedElement.id,
-          result.destination.droppableId
+          result.destination.droppableId,
+          true,
+          user.id
         );
         return dispatch(setWalkInData(listCopy));
       }
@@ -139,7 +153,9 @@ const ServiceWalkin = () => {
       ) {
         RequestService.requestTableModify(
           removedElement.id,
-          result.destination.droppableId
+          result.destination.droppableId,
+          true,
+          user.id
         );
         return dispatch(setWalkInData(listCopy));
       }
@@ -247,7 +263,8 @@ const ServicePickup = () => {
       RequestService.requestTableModify(
         removedElement.id,
         result.destination.droppableId,
-        false
+        false,
+        user.id
       );
       return dispatch(setPickUpData(listCopy));
     }
@@ -259,7 +276,8 @@ const ServicePickup = () => {
       RequestService.requestTableModify(
         removedElement.id,
         result.destination.droppableId,
-        false
+        false,
+        user.id
       );
       return dispatch(setPickUpData(listCopy));
     }
@@ -272,7 +290,8 @@ const ServicePickup = () => {
         RequestService.requestTableModify(
           removedElement.id,
           result.destination.droppableId,
-          false
+          false,
+          user.id
         );
         return dispatch(setPickUpData(listCopy));
       }
@@ -283,7 +302,8 @@ const ServicePickup = () => {
         RequestService.requestTableModify(
           removedElement.id,
           result.destination.droppableId,
-          false
+          false,
+          user.id
         );
         return dispatch(setPickUpData(listCopy));
       }
@@ -339,5 +359,13 @@ const ServicePickup = () => {
         })}
       </div>
     </DragDropContext>
+  );
+};
+
+const ServiceClientRecord = () => {
+  return (
+    <React.Fragment>
+      <LatestCustomerTable />
+    </React.Fragment>
   );
 };

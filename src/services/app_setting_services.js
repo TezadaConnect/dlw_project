@@ -6,6 +6,7 @@ import {
   uploadBytes,
 } from "firebase/storage";
 import { firestore, storage } from "../config/firebase_config";
+import AuditTrailService, { ACTION_RECORD } from "./audit_trail_service";
 
 export const QUERY_APP = collection(firestore, "app_config");
 
@@ -19,18 +20,24 @@ const getAppSettingsInfo = async () => {
   }
 };
 
-const updateValue = async (value) => {
+const updateValue = async (value, moderator) => {
   try {
     await updateDoc(doc(QUERY_APP, "wDa3KaDTIaNAyrVEr7Bz"), {
       ...value,
     });
+
+    await AuditTrailService.addRecord(
+      moderator,
+      ACTION_RECORD[1],
+      `Updated App Settings`
+    );
   } catch (error) {
     throw error;
   }
 };
 
 const updateProfileImage = async (value, file) => {
-  const { img_path } = value;
+  const { img_path, moderator } = value;
   try {
     if (img_path !== "") {
       const PRODDUC_DEL_REF = ref(storage, img_path);
@@ -48,6 +55,12 @@ const updateProfileImage = async (value, file) => {
       img_alt: "app-icn-alt",
       img_path: PRODUCT_IMG_REF.fullPath,
     });
+
+    await AuditTrailService.addRecord(
+      moderator,
+      ACTION_RECORD[1],
+      `Updated App Image`
+    );
   } catch (error) {
     throw error;
   }

@@ -32,7 +32,7 @@ const sidebarItems = [
 
 const ManagementView = () => {
   const [page, setPage] = useState(1);
-  useGetProducts();
+
   const { user } = useSelector((state) => state.user);
 
   useEffect(() => {
@@ -83,12 +83,13 @@ const CashFlowDisplay = () => {
 
 const ProductServices = () => {
   const { products } = useSelector((state) => state.service_product);
+  const { user } = useSelector((state) => state.user);
   return (
     <React.Fragment>
       <div className="object-contain flex flex-row justify-between items-center">
         <p className="text-xl text-gray-500 font-bold">ALL SERVICES</p>
         <button
-          onClick={() => createNewProduct()}
+          onClick={() => createNewProduct(user?.id)}
           className="px-5 py-3 rounded bg-black text-white hover:bg-gray-900 active:translate-y-1"
         >
           Add Service
@@ -103,10 +104,10 @@ const ProductServices = () => {
   );
 };
 
-const createNewProduct = () => {
+const createNewProduct = (moderator) => {
   MySwal.fire({
     width: 700,
-    html: <CreateServiceModal />,
+    html: <CreateServiceModal moderator={moderator} />,
     showConfirmButton: false,
     showCloseButton: true,
   });

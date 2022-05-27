@@ -13,13 +13,14 @@ const validationCpassword = Yup.string()
   .required("This field is required")
   .oneOf([Yup.ref("password"), null], "Passwords must match");
 
-const ResetPasswordModal = ({ value }) => {
+const ResetPasswordModal = ({ value, moderator }) => {
   const [loading, setBusy] = useState(false);
   const requestForm = useFormik({
     enableReinitialize: true,
     initialValues: {
       userId: value?.id ?? "",
       password: "",
+      moderator: moderator,
       c_password: "",
     },
     validationSchema: Yup.object({

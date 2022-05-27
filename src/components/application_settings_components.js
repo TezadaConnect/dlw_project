@@ -7,7 +7,7 @@ import { InputComponent } from "./common/input_component";
 import ReactLoading from "react-loading";
 import { errorPopup, successPopup } from "./common/response_component";
 
-export const ChangeImageModal = ({ link_image = "", img_path }) => {
+export const ChangeImageModal = ({ link_image = "", img_path, moderator }) => {
   const [image, setImage] = useImageHook();
   const [loading, setBusy] = useState(false);
 
@@ -16,6 +16,7 @@ export const ChangeImageModal = ({ link_image = "", img_path }) => {
     initialValues: {
       img: "",
       img_path: img_path ?? "",
+      moderator: moderator,
     },
     validationSchema: Yup.object({
       img: Yup.mixed().required("This Field is Required"),
@@ -97,7 +98,7 @@ export const ChangeImageModal = ({ link_image = "", img_path }) => {
   );
 };
 
-export const ChangeValueModal = ({ label, name, init }) => {
+export const ChangeValueModal = ({ label, name, init, moderator }) => {
   const [loading, setBusy] = useState(false);
   const sendForm = useFormik({
     enableReinitialize: true,
@@ -109,7 +110,7 @@ export const ChangeValueModal = ({ label, name, init }) => {
     }),
     onSubmit: (value) => {
       setBusy(true);
-      AppSettingService.updateValue(value)
+      AppSettingService.updateValue(value, moderator)
         .then(() => successPopup("Updated Successfully"))
         .then((err) => errorPopup(err.message));
     },

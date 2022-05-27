@@ -1,5 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { MdAccountCircle, MdSettingsApplications } from "react-icons/md";
+import {
+  MdAccountCircle,
+  MdFiberManualRecord,
+  MdNote,
+  MdNoteAdd,
+  MdSettingsApplications,
+} from "react-icons/md";
 import { useTable } from "react-table/dist/react-table.development";
 import NavbarComponent from "../components/common/navbar_component";
 import SidebarComponent from "../components/common/sidebar_component";
@@ -20,6 +26,7 @@ import {
 } from "../components/application_settings_components";
 import { useDispatch, useSelector } from "react-redux";
 import { setRefresh } from "../redux/slice/response_slice";
+import AuditTrailView from "../components/tables/audit_trail_table";
 
 const MySwal = withReactContent(Swal);
 
@@ -30,8 +37,13 @@ const sidebarItems = [
     icon: <MdAccountCircle size={20} />,
   },
   {
-    label: "App Setting",
+    label: "Audit Trail",
     value: 2,
+    icon: <MdNote size={20} />,
+  },
+  {
+    label: "App Setting",
+    value: 3,
     icon: <MdSettingsApplications size={20} />,
   },
 ];
@@ -47,7 +59,8 @@ const AdminView = () => {
         <div className="flex-grow">
           <NavbarComponent title="ADMINISTRATOR" />
           {page === 1 && <AccountsView />}
-          {page === 2 && <ApplicationSetting />}
+          {page === 2 && <AuditTrailView />}
+          {page === 3 && <ApplicationSetting />}
         </div>
       </div>
     </React.Fragment>
@@ -57,12 +70,13 @@ const AdminView = () => {
 export default AdminView;
 
 const AccountsView = () => {
+  const { user } = useSelector((state) => state.user);
   return (
     <React.Fragment>
       <div className="object-contain flex flex-row justify-between items-center mx-5 mt-4">
         <p className="text-xl text-gray-500 font-bold">ALL ACCOUNTS</p>
         <button
-          onClick={() => createAccountModal()}
+          onClick={() => createAccountModal(undefined, undefined, user?.id)}
           className="px-5 py-3 rounded bg-black text-white hover:bg-gray-900 active:translate-y-1"
         >
           Create New Account
@@ -79,6 +93,7 @@ const AccountsView = () => {
 
 const TableView = () => {
   const [accounts, setAccounts] = useState([]);
+  const { user } = useSelector((state) => state.user);
 
   const columns = useMemo(
     () => [
@@ -99,6 +114,10 @@ const TableView = () => {
         accessor: "lname",
       },
       {
+        Header: "Contact No.",
+        accessor: "contact",
+      },
+      {
         Header: "Role",
         accessor: "role",
       },
@@ -114,7 +133,8 @@ const TableView = () => {
                   onClick={() => {
                     createAccountModal(
                       creationTypeEnum.update,
-                      cell.row.values
+                      cell.row.values,
+                      user?.id
                     );
                   }}
                 />
@@ -123,7 +143,7 @@ const TableView = () => {
                 <FaTrash
                   size={20}
                   onClick={() => {
-                    deleteAccountPopup(cell.row.values.id);
+                    deleteAccountPopup(cell.row.values.id, user?.id);
                   }}
                 />
               </div>
@@ -132,7 +152,7 @@ const TableView = () => {
                 <FaKey
                   size={20}
                   onClick={() => {
-                    updatePassword(cell.row.values);
+                    updatePassword(cell.row.values, user?.id);
                   }}
                 />
               </div>
@@ -184,7 +204,10 @@ const AccountsTable = ({ columns, data }) => {
         {headerGroups.map((headerGroup) => (
           <tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column) => (
-              <th className="p-2 border" {...column.getHeaderProps()}>
+              <th
+                className="p-4 text-white bg-black border"
+                {...column.getHeaderProps()}
+              >
                 {column.render("Header")}
               </th>
             ))}
@@ -198,7 +221,7 @@ const AccountsTable = ({ columns, data }) => {
             <tr {...row.getRowProps()}>
               {row.cells.map((cell) => {
                 return (
-                  <td className="px-2 py-1 border" {...cell.getCellProps()}>
+                  <td className="p-3 border" {...cell.getCellProps()}>
                     {cell.render("Cell")}
                   </td>
                 );
@@ -211,16 +234,16 @@ const AccountsTable = ({ columns, data }) => {
   );
 };
 
-const createAccountModal = (creation, user) => {
+const createAccountModal = (creation, user, moderator) => {
   MySwal.fire({
-    html: <CreateUserModal type={creation} user={user} />,
+    html: <CreateUserModal type={creation} user={user} moderator={moderator} />,
     width: 700,
     showConfirmButton: false,
     showCloseButton: true,
   });
 };
 
-const deleteAccountPopup = (id) => {
+const deleteAccountPopup = (id, moderator) => {
   MySwal.fire({
     icon: "success",
     title: "Delete Succesfully",
@@ -228,19 +251,20 @@ const deleteAccountPopup = (id) => {
     confirmButtonColor: "#000",
     focusConfirm: false,
     preConfirm: async () => {
-      console.log(id);
-      await axios.post(
-        API_HOST + "delete-user",
-        { userId: id },
-        { withCredentials: true }
-      );
+      await axios
+        .post(
+          API_HOST + "delete-user",
+          { userId: id, moderator: moderator },
+          { withCredentials: true }
+        )
+        .catch((err) => console.log(err?.message));
     },
   });
 };
 
-const updatePassword = (value) => {
+const updatePassword = (value, moderator) => {
   MySwal.fire({
-    html: <ResetPasswordModal value={value} />,
+    html: <ResetPasswordModal value={value} moderator={moderator} />,
     width: 700,
     showConfirmButton: false,
     showCloseButton: true,
@@ -249,6 +273,7 @@ const updatePassword = (value) => {
 
 const ApplicationSetting = () => {
   const { project } = useSelector((state) => state.response);
+  const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   return (
     <React.Fragment>
@@ -269,7 +294,11 @@ const ApplicationSetting = () => {
 
             <div
               onClick={() =>
-                editImageComponent(project?.img_path, project?.img_url)
+                editImageComponent(
+                  project?.img_path,
+                  project?.img_url,
+                  user?.id
+                )
               }
               className="opacity-0 absolute top-0 flex items-center justify-center  transition delay-75 hover:opacity-75 h-48 w-48 bg-black text-white rounded-full"
             >
@@ -289,7 +318,8 @@ const ApplicationSetting = () => {
                 await editValueComponent(
                   "app_name",
                   "Application name",
-                  project?.app_name
+                  project?.app_name,
+                  user?.id
                 );
                 dispatch(setRefresh());
               }}
@@ -309,7 +339,8 @@ const ApplicationSetting = () => {
                 editValueComponent(
                   "company_name",
                   "Company",
-                  project?.company_name
+                  project?.company_name,
+                  user?.id
                 )
               }
               className="hover:text-green-700"
@@ -328,19 +359,32 @@ const ApplicationSetting = () => {
   );
 };
 
-const editImageComponent = (path, link) => {
+const editImageComponent = (path, link, moderator) => {
   MySwal.fire({
     width: 700,
-    html: <ChangeImageModal img_path={path} link_image={link} />,
+    html: (
+      <ChangeImageModal
+        img_path={path}
+        link_image={link}
+        moderator={moderator}
+      />
+    ),
     showConfirmButton: false,
     showCloseButton: true,
   });
 };
 
-const editValueComponent = (name, label, init) => {
+const editValueComponent = (name, label, init, moderator) => {
   return MySwal.fire({
     width: 700,
-    html: <ChangeValueModal name={name} label={label} init={init} />,
+    html: (
+      <ChangeValueModal
+        name={name}
+        label={label}
+        init={init}
+        moderator={moderator}
+      />
+    ),
     showConfirmButton: false,
     showCloseButton: true,
   });

@@ -26,6 +26,7 @@ export const DragableElements = ({
   is_walkin = true,
 }) => {
   const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.user);
 
   return (
     <div className="bg-white w-1/3 rounded border shadow-sm">
@@ -43,7 +44,8 @@ export const DragableElements = ({
                   is_walkin,
                   creationTypeEnum.new,
                   null,
-                  true
+                  true,
+                  user?.id
                 )
               }
             />
@@ -79,7 +81,8 @@ const addTodoModal = async (
   is_walk = true,
   type = creationTypeEnum.new,
   req_id,
-  isAdmin = false
+  isAdmin = false,
+  user
 ) => {
   MySwal.fire({
     width: "700px",
@@ -89,6 +92,7 @@ const addTodoModal = async (
         is_walk={is_walk}
         req_id={req_id}
         isAdmin={isAdmin}
+        moderator={user}
       />
     ),
     showCloseButton: true,
@@ -114,7 +118,8 @@ const ItemCard = ({ item, index, is_walk = true, req_id }) => {
       is_walk,
       creationTypeEnum.update,
       req_id,
-      admin
+      admin,
+      user?.id
     );
   };
 
@@ -137,6 +142,7 @@ const ItemCard = ({ item, index, is_walk = true, req_id }) => {
                   className="font-bold text-red-900 hover:text-red-600 active:translate-y-1"
                   onClick={() =>
                     updateStatus(
+                      user?.id,
                       item.user_id,
                       req_id,
                       item.status,
@@ -174,6 +180,7 @@ const ItemCard = ({ item, index, is_walk = true, req_id }) => {
 };
 
 const updateStatus = (
+  moderator,
   user_id,
   req_id,
   status,
@@ -189,6 +196,7 @@ const updateStatus = (
         value={status}
         is_walk={is_walk}
         isAdmin={isAdmin}
+        moderator={moderator}
       />
     ),
     showConfirmButton: false,

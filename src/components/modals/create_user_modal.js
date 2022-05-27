@@ -13,7 +13,11 @@ const validationCpassword = Yup.string()
   .required("This field is required")
   .oneOf([Yup.ref("password"), null], "Passwords must match");
 
-const CreateUserModal = ({ type = creationTypeEnum.new, user = null }) => {
+const CreateUserModal = ({
+  type = creationTypeEnum.new,
+  user = null,
+  moderator,
+}) => {
   const [loading, setBusy] = useState(false);
 
   const requestForm = useFormik({
@@ -23,9 +27,11 @@ const CreateUserModal = ({ type = creationTypeEnum.new, user = null }) => {
       role: user?.role ?? "",
       fname: user?.fname ?? "",
       lname: user?.lname ?? "",
+      contact: user?.contact ?? "",
       userId: user?.id ?? "",
       password: "",
       c_password: "",
+      moderator: moderator,
     },
     validationSchema: Yup.object({
       email: Yup.string()
@@ -34,6 +40,7 @@ const CreateUserModal = ({ type = creationTypeEnum.new, user = null }) => {
       role: validationStandard,
       fname: validationStandard,
       lname: validationStandard,
+      contact: Yup.number().typeError("Must be a Number"),
       password:
         type !== creationTypeEnum.update ? validationStandard : Yup.string(),
       c_password:
@@ -108,6 +115,13 @@ const CreateUserModal = ({ type = creationTypeEnum.new, user = null }) => {
           name="lname"
           label="Last Name"
           placeholder="last name"
+          formik={requestForm}
+        />
+
+        <InputComponent
+          name="contact"
+          label="Contact No."
+          placeholder="contact no."
           formik={requestForm}
         />
 

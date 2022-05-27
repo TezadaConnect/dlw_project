@@ -21,7 +21,11 @@ const listItem = [
   { label: "Web", value: "web" },
 ];
 
-const CreateServiceModal = ({ type = creationTypeEnum.new, prod_id }) => {
+const CreateServiceModal = ({
+  type = creationTypeEnum.new,
+  prod_id,
+  moderator,
+}) => {
   const [image, setImage] = useImageHook();
   const [editData, setEditData] = useState();
   const [loading, setBusy] = useState(false);
@@ -35,6 +39,7 @@ const CreateServiceModal = ({ type = creationTypeEnum.new, prod_id }) => {
       desc: editData?.desc ?? "",
       img: editData?.img_url ?? "",
       img_path: editData?.img_path ?? "",
+      moderator: moderator,
     },
     validationSchema: Yup.object({
       service_name: validationStandard,

@@ -19,6 +19,7 @@ const CreateRequestModal = ({
   req_id = null,
   is_walk = true,
   isAdmin = true,
+  moderator,
 }) => {
   const [lists, setLists] = useState({ products: [], kilo: [] });
   const [product, setProduct] = useState([]);
@@ -55,7 +56,7 @@ const CreateRequestModal = ({
     }),
     onSubmit: async (values) => {
       if (type === creationTypeEnum.new) {
-        await RequestService.createNewRequest(values, is_walk)
+        await RequestService.createNewRequest(values, is_walk, moderator)
           .then(() => Swal.clickConfirm())
           .catch((err) => {
             console.log(err.message);
@@ -64,7 +65,7 @@ const CreateRequestModal = ({
       }
 
       if (type === creationTypeEnum.update) {
-        RequestService.updateRequest(req_id, values, is_walk)
+        RequestService.updateRequest(req_id, values, is_walk, moderator)
           .then(() => Swal.clickConfirm())
           .catch((err) => {
             console.log(err.message);
