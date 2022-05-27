@@ -1,7 +1,7 @@
 const admin = require("firebase-admin");
 const { getFirestore } = require("firebase-admin/firestore");
 
-const serviceAccount = require("./dlw-backend-firebase-adminsdk-21m7p-6c8a115928.json");
+const serviceAccount = require("./dlw-backend-firebase-adminsdk-21m7p-286216270a.json");
 
 const ADMIN_CONFIG = {
   credential: admin.credential.cert(serviceAccount),

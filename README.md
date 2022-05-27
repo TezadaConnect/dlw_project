@@ -7,9 +7,7 @@ A project for Laundry Business. This project uses React as its frontend framewor
 - [Check the live app design here](https://www.figma.com/proto/1iKljyh6bTiSo9ByyT1kis/DLW?node-id=12%3A124&scaling=min-zoom&page-id=0%3A1&starting-point-node-id=12%3A114)
 - [Comment for changes here](https://www.figma.com/file/1iKljyh6bTiSo9ByyT1kis/DLW?node-id=0%3A1)
 
-## Getting started in React Native
-
-- [ReactJs Docs](https://reactjs.org/docs/getting-started.html)
+## Getting started in NodeJs
 
 ### Setup requirements
 

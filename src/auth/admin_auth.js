@@ -3,11 +3,19 @@ const {
   ADMIN_FIRESTORE,
 } = require("../config/firebase_admin_config");
 
+const ACTION_RECORD = ["CREATE", "UPDATE", "REMOVE"];
+
 exports.deleteUser = (req, res) => {
-  const { userId } = req.body;
+  const { userId, moderator } = req.body;
   try {
     ADMIN_FIRESTORE.collection("users").doc(userId).delete();
     ADMIN_AUTH.deleteUser(userId);
+    ADMIN_FIRESTORE.collection("audit_trail").add({
+      user: moderator,
+      action: ACTION_RECORD[2],
+      description: "Removed user " + userId,
+      date: new Date(),
+    });
     return res.status(200).json({
       status: "200",
       message: "User: " + JSON.stringify(userId) + " successfully deleted",
@@ -18,7 +26,7 @@ exports.deleteUser = (req, res) => {
 };
 
 exports.addUser = (req, res) => {
-  const { password, fname, lname, email, role } = req.body;
+  const { password, fname, lname, email, role, contact, moderator } = req.body;
   try {
     const user_fname = (fname.charAt(0).toUpperCase() + fname.slice(1)).trim();
     const user_lname = (lname.charAt(0).toUpperCase() + lname.slice(1)).trim();
@@ -32,9 +40,17 @@ exports.addUser = (req, res) => {
         fname: user_fname,
         lname: user_lname,
         role: role,
+        contact: contact,
         terms: true,
       });
+      ADMIN_FIRESTORE.collection("audit_trail").add({
+        user: moderator,
+        action: ACTION_RECORD[0],
+        description: "Created user " + user.uid,
+        date: new Date(),
+      });
     });
+
     res.status(200).json({
       status: "200",
       message: "User successfully added",
@@ -45,7 +61,7 @@ exports.addUser = (req, res) => {
 };
 
 exports.updateUser = (req, res) => {
-  const { fname, lname, email, role, userId } = req.body;
+  const { fname, lname, email, role, userId, contact, moderator } = req.body;
   try {
     const user_fname = (fname.charAt(0).toUpperCase() + fname.slice(1)).trim();
     const user_lname = (lname.charAt(0).toUpperCase() + lname.slice(1)).trim();
@@ -57,9 +73,17 @@ exports.updateUser = (req, res) => {
         email: email,
         fname: user_fname,
         lname: user_lname,
+        contact: contact,
         role: role,
       });
+      ADMIN_FIRESTORE.collection("audit_trail").add({
+        user: moderator,
+        action: ACTION_RECORD[1],
+        description: "Updated user " + userId,
+        date: new Date(),
+      });
     });
+
     return res.status(200).json({
       status: "200",
       message: "User successfully updated",
@@ -70,14 +94,21 @@ exports.updateUser = (req, res) => {
 };
 
 exports.updatePassword = (req, res) => {
-  const { password, userId } = req.body;
+  const { password, userId, moderator } = req.body;
   try {
     ADMIN_AUTH.updateUser(userId, {
       password: password,
     });
+
+    ADMIN_FIRESTORE.collection("audit_trail").add({
+      user: moderator,
+      action: ACTION_RECORD[1],
+      description: "Updated user " + userId + "'s password",
+      date: new Date(),
+    });
     return res.status(200).json({
       status: "200",
-      message: "Updated updated",
+      message: "Updated",
     });
   } catch (error) {
     throw error;
