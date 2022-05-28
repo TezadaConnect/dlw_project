@@ -7,7 +7,7 @@ import { setUser } from "../redux/slices/user_slice";
 import LoginView from "../view/auth/login_view";
 import RegisterView from "../view/auth/register_view";
 import HomeView from "../view/home_view";
-import { authentication } from "../config/firebase_config";
+import { authentication, firestore } from "../config/firebase_config";
 import { setBusy } from "../redux/slices/response_slice";
 import TermsView from "../view/terms_view";
 import NoticeView from "../view/notice_view";
@@ -21,6 +21,7 @@ import {
   useGetTopProducts,
 } from "../helper/hooks/use_start_dep_hooks";
 import { registerIndieID } from "native-notify";
+import { collection, doc, getDoc } from "firebase/firestore";
 
 const Stack = createNativeStackNavigator();
 
@@ -32,13 +33,19 @@ const AppRoute = () => {
 
   useEffect(async () => {
     dispatch(setBusy(true));
-    onAuthStateChanged(authentication, (currentUser) => {
+    onAuthStateChanged(authentication, async (currentUser) => {
       if (currentUser) {
+        const QRY = collection(firestore, "users");
+        const userInfo = await getDoc(doc(QRY, currentUser?.uid));
+        console.log(userInfo.data());
         dispatch(
           setUser({
             name: currentUser.displayName,
             email: currentUser.email,
             id: currentUser.uid,
+            fname: userInfo?.data()?.fname,
+            lname: userInfo?.data()?.lname,
+            contact: userInfo?.data()?.contact,
           })
         );
       } else {
@@ -46,7 +53,6 @@ const AppRoute = () => {
       }
     });
     dispatch(setBusy(false));
-    console.log(user);
   }, []);
 
   useGetProducts();

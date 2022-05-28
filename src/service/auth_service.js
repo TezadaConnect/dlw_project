@@ -3,11 +3,13 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
   signOut,
+  onAuthStateChanged,
+  updateEmail,
 } from "firebase/auth";
 import { collection, doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 import { authentication, firestore } from "../config/firebase_config";
 
-const USERS_QUERY = collection(firestore, "users");
+export const USERS_QUERY = collection(firestore, "users");
 
 /**
  * Login Function
@@ -33,7 +35,7 @@ const login = async (values) => {
  * @param {object} values object with email and password keys and others
  */
 const register = async (values) => {
-  const { email, password, fname, lname } = values;
+  const { email, password, fname, lname, contact } = values;
   try {
     const user_fname = (fname.charAt(0).toUpperCase() + fname.slice(1)).trim();
     const user_lname = (lname.charAt(0).toUpperCase() + lname.slice(1)).trim();
@@ -52,6 +54,7 @@ const register = async (values) => {
       fname: user_fname,
       lname: user_lname,
       role: "client",
+      contact: contact,
       terms: false,
     });
 
@@ -59,6 +62,37 @@ const register = async (values) => {
   } catch (error) {
     throw error;
   }
+};
+
+const editProfile = async (values) => {
+  const { email, fname, lname, contact } = values;
+  const user_fname = (fname.charAt(0).toUpperCase() + fname.slice(1)).trim();
+  const user_lname = (lname.charAt(0).toUpperCase() + lname.slice(1)).trim();
+  let user = {};
+  console.log(email);
+  try {
+    onAuthStateChanged(authentication, async (currentUser) => {
+      if (currentUser) {
+        await updateProfile(currentUser, {
+          displayName: user_fname + " " + user_lname,
+        });
+        await updateEmail(currentUser, email).catch((err) => {
+          throw new Error(err.message);
+        });
+        await updateDoc(doc(USERS_QUERY, currentUser.uid), {
+          email: email,
+          fname: user_fname,
+          lname: user_lname,
+          contact: contact,
+        });
+      }
+      return user;
+    });
+  } catch (error) {
+    throw error;
+  }
+
+  return user;
 };
 
 const readAgreement = async (id) => {
@@ -101,6 +135,7 @@ const AuthService = {
   logout,
   readAgreement,
   modifyAgreement,
+  editProfile,
 };
 
 export default AuthService;

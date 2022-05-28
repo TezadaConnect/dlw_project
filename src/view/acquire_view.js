@@ -35,7 +35,7 @@ const AcquireView = () => {
     enableReinitialize: true,
     initialValues: {
       address: "",
-      contact: "",
+      contact: user?.contact ?? "",
       load: "",
       service_type: prodDetail?.id ?? "",
       customer_name: user?.name,

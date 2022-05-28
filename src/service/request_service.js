@@ -4,6 +4,8 @@ import {
   doc,
   getDocs,
   updateDoc,
+  query,
+  where,
 } from "firebase/firestore";
 import { firestore } from "../config/firebase_config";
 import axios from "axios";
@@ -70,10 +72,34 @@ const addFiveMunitesDelay = async (id) => {
   });
 };
 
+const getMyTransactions = async (id) => {
+  const snap = await getDocs(
+    query(PICKUP_QUERY, where("status", "==", "DONE"))
+  );
+  const arrHolder = [];
+  snap.forEach((element) => {
+    if (element.data().recieve_date !== null) {
+      if (element.data().user_id === id) {
+        const data = element.data().recieve_date.toDate().toString();
+        arrHolder.push({
+          id: element.id,
+          ...element.data(),
+          recieve_date: data,
+        });
+      }
+    }
+  });
+
+  return arrHolder.sort(
+    (a, b) => new Date(b.recieve_date) - new Date(a.recieve_date)
+  );
+};
+
 const RequestService = {
   requestStatusModify,
   createNewRequest,
   getTopTopProductBaseRequest,
   addFiveMunitesDelay,
+  getMyTransactions,
 };
 export default RequestService;

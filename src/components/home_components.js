@@ -2,11 +2,7 @@ import { Card, Icon, Layout, Text } from "@ui-kitten/components";
 import { StyleSheet } from "react-native";
 import React from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import {
-  TouchableWithoutFeedback,
-  TouchableOpacity,
-  ImageBackground,
-} from "react-native";
+import { TouchableOpacity, ImageBackground } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { showMessage } from "react-native-flash-message";
@@ -144,6 +140,38 @@ export const TopProductCardComponent = ({ count, title, id, reference }) => {
         </Layout>
       </Card>
     </React.Fragment>
+  );
+};
+
+export const ActivityLog = ({ item }) => {
+  return (
+    <Card style={{ marginHorizontal: 10, marginBottom: 5 }} disabled>
+      <Layout style={{ marginBottom: 2 }}>
+        <Text style={{ fontWeight: "bold", fontSize: 18 }}>
+          {item?.id ?? "Hello World"}
+        </Text>
+      </Layout>
+      <Layout
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          flexDirection: "row",
+          marginBottom: 2,
+        }}
+      >
+        <Text style={{ color: "grey", fontSize: 14 }}>
+          {item?.type ?? "Full Service"}
+        </Text>
+        <Text style={{ color: "grey", fontSize: 14 }}>
+          PHP {item?.price ?? 0.0}
+        </Text>
+      </Layout>
+      <Layout>
+        <Text style={{ color: "grey", fontSize: 12 }}>
+          {item?.recieve_date ?? "3/30/2022"}
+        </Text>
+      </Layout>
+    </Card>
   );
 };
 

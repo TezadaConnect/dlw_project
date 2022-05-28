@@ -1,8 +1,10 @@
 import { useNavigation } from "@react-navigation/native";
+import { collection, doc, getDoc } from "firebase/firestore";
 import { useEffect } from "react";
 import { showMessage } from "react-native-flash-message";
 import { useDispatch, useSelector } from "react-redux";
-import { setBusy } from "../../redux/slices/response_slice";
+import { firestore } from "../../config/firebase_config";
+import { setBusy, setRefresh } from "../../redux/slices/response_slice";
 import { setUser } from "../../redux/slices/user_slice";
 import AuthService from "../../service/auth_service";
 
@@ -28,12 +30,17 @@ const useAuthHook = () => {
   const login = async (values) => {
     dispatch(setBusy(true));
     await AuthService.login(values)
-      .then((userRes) => {
+      .then(async (userRes) => {
+        const QRY = collection(firestore, "users");
+        const userInfo = await getDoc(doc(QRY, userRes?.uid));
         dispatch(
           setUser({
             id: userRes.uid,
             name: userRes.displayName,
             email: userRes.email,
+            fname: userInfo?.data().fname,
+            lname: userInfo?.data().lname,
+            contact: userInfo?.data().contact,
           })
         );
         showMessage({
@@ -59,12 +66,17 @@ const useAuthHook = () => {
   const signup = async (values) => {
     dispatch(setBusy(true));
     await AuthService.register(values)
-      .then((userRes) => {
+      .then(async (userRes) => {
+        const QRY = collection(firestore, "users");
+        const userInfo = await getDoc(doc(QRY, userRes?.uid));
         dispatch(
           setUser({
             id: userRes.uid,
             name: userRes.displayName,
             email: userRes.email,
+            fname: userInfo?.data().fname,
+            lname: userInfo?.data().lname,
+            contact: userInfo?.data().contact,
           })
         );
         showMessage({
@@ -85,6 +97,33 @@ const useAuthHook = () => {
         });
         dispatch(setBusy(false));
       });
+  };
+
+  const editProfile = async (values) => {
+    dispatch(setBusy(true));
+    await AuthService.editProfile(values)
+      .then(async (currentUser) => {
+        showMessage({
+          message: "New User",
+          description: "Account Successfully Created",
+          type: "success",
+          icon: "success",
+        });
+
+        dispatch(setBusy(false));
+
+        next.goBack();
+      })
+      .catch((err) => {
+        showMessage({
+          message: "Action Denied",
+          description: err.message,
+          type: "danger",
+          icon: "danger",
+        });
+        dispatch(setBusy(false));
+      });
+    dispatch(setRefresh());
   };
 
   const checkUser = () => {
@@ -139,7 +178,15 @@ const useAuthHook = () => {
     }
   };
 
-  return { login, signup, logout, checkUser, checkAgreement, agreedToTerms };
+  return {
+    login,
+    signup,
+    logout,
+    checkUser,
+    checkAgreement,
+    agreedToTerms,
+    editProfile,
+  };
 };
 
 export default useAuthHook;

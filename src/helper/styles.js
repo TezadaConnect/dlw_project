@@ -6,6 +6,7 @@ export const layouts = StyleSheet.create({
     display: "flex",
     backgroundColor: "white",
     justifyContent: "space-between",
+    flexDirection: "column",
   },
 
   padding: {

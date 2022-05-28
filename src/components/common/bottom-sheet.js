@@ -7,7 +7,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { PulseIndicator } from "react-native-indicators";
 import CountDown from "react-native-countdown-component";
 import { showMessage } from "react-native-flash-message";
-import { setCurrentRequest, setTime } from "../../redux/slices/product_slice";
 import { useGetTimer } from "../../helper/hooks/use_start_dep_hooks";
 import { setRefresh } from "../../redux/slices/response_slice";
 import RequestService from "../../service/request_service";
@@ -107,6 +106,7 @@ const BottomSheetComponent = ({ modalRef }) => {
                 >
                   {title}.
                 </Text>
+
                 <Layout style={styles.progressLayout}>
                   <Layout
                     style={{

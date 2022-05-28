@@ -11,10 +11,20 @@
 
 // module.exports = defaultConfig;
 
+// const { getDefaultConfig } = require("@expo/metro-config");
+
+// const config = getDefaultConfig(__dirname);
+
+// config.resolver.resolverMainFields.unshift("react-native");
+
+// module.exports = config;
+
 const { getDefaultConfig } = require("@expo/metro-config");
 
-const config = getDefaultConfig(__dirname);
+const defaultConfig = getDefaultConfig(__dirname);
 
-config.resolver.resolverMainFields.unshift("react-native");
+defaultConfig.resolver.resolverMainFields.unshift("react-native");
 
-module.exports = config;
+defaultConfig.resolver.assetExts.push("cjs");
+
+module.exports = defaultConfig;
