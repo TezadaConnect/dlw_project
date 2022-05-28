@@ -122,7 +122,9 @@ const CreateRequestModal = ({
   useEffect(() => {
     const kiloList = lists?.kilo;
     kiloList?.forEach((element) => {
-      if (parseFloat(requestForm?.values?.kilogram) === element?.value) {
+      if (
+        parseFloat(requestForm?.values?.kilogram) === parseFloat(element?.value)
+      ) {
         requestForm.setFieldValue("price", element?.price);
       }
     });
