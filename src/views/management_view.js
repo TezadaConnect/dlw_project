@@ -42,7 +42,7 @@ const ManagementView = () => {
   const { user } = useSelector((state) => state.user);
 
   useEffect(() => {
-    if (user?.role === "admin") return setPage(2);
+    if (user?.role === "admin") return setPage(3);
   }, []);
 
   return (
