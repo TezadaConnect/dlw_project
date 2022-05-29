@@ -1,67 +1,33 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useSelector } from "react-redux";
 import { usePagination, useTable } from "react-table";
-import RequestService from "../../services/request_service";
+import FinanceService from "../../services/finance_service";
+import generatePDF from "../pdfs/monthly_report";
+import DatePicker from "react-datepicker";
 
-const LatestCustomerTable = () => {
+const PrintableCustomerTable = () => {
   const [client, setClient] = useState([]);
-  const { products } = useSelector((state) => state.service_product);
-
-  const convertProducts = (id) => {
-    let itemArr = {};
-    products?.forEach((element) => {
-      itemArr = { ...itemArr, [element?.id]: element.data.service_name };
-    });
-    return itemArr[id];
-  };
+  const [selectableDate, setSelectableDate] = useState({
+    year: new Date().getFullYear(),
+    type: 0,
+  });
 
   const columns = useMemo(
     () => [
       {
-        Header: "ID",
-        accessor: "id",
-      },
-      {
-        Header: "Customer Name",
-        accessor: "customer_name",
-      },
-      {
-        Header: "Contact No.",
-        accessor: "contact",
-      },
-      {
-        Header: "Service",
-        accessor: "service_type",
-        Cell: ({ cell }) => (
-          <React.Fragment>
-            {convertProducts(cell?.row?.values?.service_type)}
-          </React.Fragment>
-        ),
-      },
-      {
-        Header: "Request Type",
-        accessor: "request_type",
-      },
-      {
-        Header: "Amount",
-        accessor: "price",
-      },
-      {
         Header: "Date",
-        accessor: "recieve_date",
-        Cell: ({ cell }) => {
-          const dateForDisplay = new Date(
-            cell?.row?.values?.recieve_date
-          ).toLocaleDateString("en-US", {
-            month: "long",
-            day: "numeric",
-            year: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-            hour12: true,
-          });
-          return <React.Fragment>{dateForDisplay}</React.Fragment>;
-        },
+        accessor: "date",
+      },
+      {
+        Header: "Number of Pickup",
+        accessor: "pickup",
+      },
+      {
+        Header: "Number of Walkin.",
+        accessor: "walking",
+      },
+      {
+        Header: "Income",
+        accessor: "income",
       },
     ],
     []
@@ -73,21 +39,71 @@ const LatestCustomerTable = () => {
   );
 
   useEffect(() => {
-    RequestService.GetAllMergeRequest()
+    FinanceService.getRequestPrintableData(
+      selectableDate.year,
+      selectableDate.type
+    )
       .then((res) => {
         setClient(res);
       })
       .catch((err) => console.log(err.message));
-  }, []);
+  }, [selectableDate]);
 
   return (
     <React.Fragment>
+      <div className="mb-5 flex flex-row justify-between items-center">
+        <div className="font-bold text-2xl">
+          {selectableDate.type === 0 ? "MONTHLY " : "WEEKLY "}
+          REPORT OF YEAR{" "}
+          {selectableDate.year !== undefined
+            ? selectableDate.year
+            : new Date().getFullYear()}
+        </div>
+        <div className="flex flex-row gap-2">
+          <div className="text-base">
+            <DatePicker
+              onChange={(date) => {
+                setSelectableDate({
+                  ...selectableDate,
+                  year: new Date(date).getFullYear(),
+                });
+              }}
+              className="text-base appearance-none p-3 bg-gray-100 box-border border border-gray-300 rounded focus:outline-none focus:border-gray-600 object-contain"
+              dateFormat="yyyy"
+              showYearPicker
+            />
+          </div>
+          <button
+            className="px-5 py-3 rounded bg-black text-white hover:bg-gray-900 active:translate-y-1"
+            onClick={() => setSelectableDate({ ...selectableDate, type: 1 })}
+          >
+            Weekly
+          </button>
+
+          <button
+            className="px-5 py-3 rounded bg-black text-white hover:bg-gray-900 active:translate-y-1"
+            onClick={() => setSelectableDate({ ...selectableDate, type: 0 })}
+          >
+            Monthly
+          </button>
+
+          <button
+            className="px-5 py-3 rounded bg-black text-white hover:bg-gray-900 active:translate-y-1"
+            onClick={() =>
+              window.open(generatePDF(client, selectableDate), "_blank")
+            }
+          >
+            Generate
+          </button>
+        </div>
+      </div>
+
       <RequestTable columns={columns} data={data} />
     </React.Fragment>
   );
 };
 
-export default LatestCustomerTable;
+export default PrintableCustomerTable;
 
 const RequestTable = ({ columns, data }) => {
   const {

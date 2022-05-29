@@ -365,6 +365,9 @@ const ServicePickup = () => {
 const ServiceClientRecord = () => {
   return (
     <React.Fragment>
+      <div className="mb-5 flex flex-row justify-between items-center">
+        <div className="font-bold text-2xl">RECENT CLIENTS</div>
+      </div>
       <LatestCustomerTable />
     </React.Fragment>
   );

@@ -9,6 +9,7 @@ import {
   where,
 } from "@firebase/firestore";
 import { async } from "@firebase/util";
+import { dataMechanics } from "../components/pdfs/monthly_report";
 import { firestore } from "../config/firebase_config";
 
 export const PICKUP_QUERY = collection(firestore, "pickup_request");
@@ -162,9 +163,56 @@ const getAllPickupRequest = async (type, dateRange) => {
   }
 };
 
+const getRequestPrintableData = async (
+  year = new Date().getFullYear(),
+  type = 0
+) => {
+  const qry_one = await getDocs(
+    query(PICKUP_QUERY, where("status", "==", "DONE"))
+  );
+  const qry_two = await getDocs(
+    query(WALKIN_QUERY, where("status", "==", "DONE"))
+  );
+  const arrayHolder = [];
+  qry_one.forEach((value) => {
+    const date = value.data().recieve_date.toDate().toString();
+    if (new Date(date).getFullYear() === year) {
+      arrayHolder.push({
+        id: value.id,
+        ...value.data(),
+        request_type: "Pick-Up",
+        recieve_date: date,
+      });
+    }
+  });
+
+  qry_two.forEach((value) => {
+    const date = value.data().recieve_date.toDate().toString();
+    if (new Date(date).getFullYear() === year) {
+      arrayHolder.push({
+        id: value.id,
+        ...value.data(),
+        request_type: "Walk-In",
+        recieve_date: date,
+      });
+    }
+  });
+
+  const finalArr = [];
+
+  arrayHolder.forEach((filter) => {
+    if (filter.release_date !== undefined) {
+      finalArr.push(filter);
+    }
+  });
+
+  return dataMechanics(finalArr, type);
+};
+
 const FinanceService = {
   getAllIncomeForTheMonth,
   getAllPickupRequest,
+  getRequestPrintableData,
 };
 
 export default FinanceService;

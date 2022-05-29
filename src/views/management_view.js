@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaMoneyBill } from "react-icons/fa";
-import { MdLocalLaundryService } from "react-icons/md";
+import { MdLocalLaundryService, MdReport } from "react-icons/md";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import NavbarComponent from "../components/common/navbar_component";
@@ -14,6 +14,7 @@ import {
 import CreateServiceModal from "../components/modals/create_service_modal";
 import { useSelector } from "react-redux";
 import { useGetProducts } from "../helpers/hooks/useStartDepHooks";
+import PrintableCustomerTable from "../components/tables/printable_customer_table";
 
 const MySwal = withReactContent(Swal);
 
@@ -24,8 +25,13 @@ const sidebarItems = [
     icon: <FaMoneyBill size={20} />,
   },
   {
-    label: "Services",
+    label: "Report",
     value: 2,
+    icon: <MdReport size={20} />,
+  },
+  {
+    label: "Services",
+    value: 3,
     icon: <MdLocalLaundryService size={20} />,
   },
 ];
@@ -49,7 +55,8 @@ const ManagementView = () => {
           <NavbarComponent title="MANAGEMENT" />
           <div className="mt-5 mx-5">
             {page === 1 && <CashFlowDisplay />}
-            {page === 2 && <ProductServices />}
+            {page === 2 && <DisplayReport />}
+            {page === 3 && <ProductServices />}
           </div>
         </div>
       </div>
@@ -111,4 +118,12 @@ const createNewProduct = (moderator) => {
     showConfirmButton: false,
     showCloseButton: true,
   });
+};
+
+const DisplayReport = () => {
+  return (
+    <React.Fragment>
+      <PrintableCustomerTable />
+    </React.Fragment>
+  );
 };

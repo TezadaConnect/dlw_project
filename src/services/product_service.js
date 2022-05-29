@@ -42,7 +42,7 @@ const createNewProduct = async (values, file = null) => {
     await AuditTrailService.addRecord(
       moderator,
       ACTION_RECORD[0],
-      `Created Product ${item.id}`
+      `Created Service ${service_name} : ${item.id}`
     );
   } catch (error) {
     throw error;
@@ -92,7 +92,7 @@ const updateProduct = async (id, values, file) => {
       await AuditTrailService.addRecord(
         moderator,
         ACTION_RECORD[1],
-        `Updated Product ${id}`
+        `Updated Updated Service  ${service_name} : ${id}`
       );
       return "Success";
     }
@@ -107,7 +107,7 @@ const updateProduct = async (id, values, file) => {
       await AuditTrailService.addRecord(
         moderator,
         ACTION_RECORD[1],
-        `Updated Product ${id}`
+        `Updated Service ${service_name} : ${id}`
       );
       return "Success";
     }

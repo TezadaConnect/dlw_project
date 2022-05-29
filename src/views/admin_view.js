@@ -27,6 +27,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { setRefresh } from "../redux/slice/response_slice";
 import AuditTrailView from "../components/tables/audit_trail_table";
+import { useGlobalFilter } from "react-table";
 
 const MySwal = withReactContent(Swal);
 
@@ -71,27 +72,36 @@ export default AdminView;
 
 const AccountsView = () => {
   const { user } = useSelector((state) => state.user);
+  const [state, setState] = useState();
   return (
     <React.Fragment>
       <div className="object-contain flex flex-row justify-between items-center mx-5 mt-4">
         <p className="text-xl text-gray-500 font-bold">ALL ACCOUNTS</p>
-        <button
-          onClick={() => createAccountModal(undefined, undefined, user?.id)}
-          className="px-5 py-3 rounded bg-black text-white hover:bg-gray-900 active:translate-y-1"
-        >
-          Create New Account
-        </button>
+
+        <div className="flex flex-row gap-3">
+          <input
+            className="appearance-none p-3 bg-gray-100 box-border border border-gray-300 rounded focus:outline-none focus:border-gray-600 object-contain"
+            placeholder="Search"
+            onChange={(e) => setState(e.target.value)}
+          />
+          <button
+            onClick={() => createAccountModal(undefined, undefined, user?.id)}
+            className="px-5 py-3 rounded bg-black text-white hover:bg-gray-900 active:translate-y-1"
+          >
+            Create New Account
+          </button>
+        </div>
       </div>
       <div className="mt-3 mx-5">
         <div>
-          <TableView />
+          <TableView value={state} />
         </div>
       </div>
     </React.Fragment>
   );
 };
 
-const TableView = () => {
+const TableView = ({ value }) => {
   const [accounts, setAccounts] = useState([]);
   const { user } = useSelector((state) => state.user);
 
@@ -183,21 +193,34 @@ const TableView = () => {
 
   return (
     <React.Fragment>
-      <AccountsTable columns={columns} data={data} />
+      <AccountsTable columns={columns} data={data} value={value} />
     </React.Fragment>
   );
 };
 
-const AccountsTable = ({ columns, data }) => {
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({
+const AccountsTable = ({ columns, data, value }) => {
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+    setGlobalFilter,
+  } = useTable(
+    {
       columns,
       data,
-    });
+    },
+    useGlobalFilter
+  );
+
+  useEffect(() => {
+    setGlobalFilter(value);
+  }, [value]);
 
   return (
     <table
-      className="w-full text-center cursor-default border"
+      className="w-full text-c  enter cursor-default border"
       {...getTableProps()}
     >
       <thead>

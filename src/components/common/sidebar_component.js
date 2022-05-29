@@ -30,6 +30,12 @@ const SidebarComponent = ({ item = [], setItem }) => {
                 return null;
               }
             }
+
+            if (user?.role === "admin") {
+              if (element?.label === "Report") {
+                return null;
+              }
+            }
             return (
               <Menu key={key} iconShape="circle">
                 <MenuItem
