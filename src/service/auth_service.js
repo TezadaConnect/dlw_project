@@ -1,3 +1,4 @@
+import { async } from "@firebase/util";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -5,8 +6,15 @@ import {
   signOut,
   onAuthStateChanged,
   updateEmail,
+  updatePassword,
 } from "firebase/auth";
 import { collection, doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
 import { authentication, firestore } from "../config/firebase_config";
 
 export const USERS_QUERY = collection(firestore, "users");
@@ -126,6 +134,40 @@ const logout = async () => {
   }
 };
 
+const changePassword = async (password) => {
+  const user = authentication.currentUser;
+  console.log(password + " " + user.uid);
+  try {
+    await updatePassword(user, password);
+  } catch (error) {
+    throw error;
+  }
+};
+
+const updateProfileImage = async (value, file) => {
+  const { img_path, userId } = value;
+  try {
+    if (img_path !== "") {
+      const PRODDUC_DEL_REF = ref(storage, img_path);
+      deleteObject(PRODDUC_DEL_REF);
+    }
+
+    const imgName = Math.round(new Date() / 1000) + "-" + file.name ?? "file";
+    let img_url = "";
+    const PRODUCT_IMG_REF = ref(storage, "app_img/" + imgName);
+    const uploadImage = await uploadBytes(PRODUCT_IMG_REF, file);
+    await getDownloadURL(uploadImage.ref).then((url) => (img_url = url));
+
+    await updateDoc(doc(USERS_QUERY, userId), {
+      img_url: img_url,
+      img_alt: "app-icn-alt",
+      img_path: PRODUCT_IMG_REF.fullPath,
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
 /**
  * An object that holds authentication functionalities
  */
@@ -136,6 +178,8 @@ const AuthService = {
   readAgreement,
   modifyAgreement,
   editProfile,
+  changePassword,
+  updateProfileImage,
 };
 
 export default AuthService;

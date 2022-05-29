@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import { Button, Layout, Text } from "@ui-kitten/components";
+import { Button, Icon, Layout, Text } from "@ui-kitten/components";
 import { onSnapshot, query } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { Image, StyleSheet } from "react-native";
@@ -57,32 +57,68 @@ const ProfileView = () => {
             <Text style={{ fontSize: 18, fontWeight: "bold" }}>
               {state?.fname + " " + state?.lname}
             </Text>
-            <Text style={{ fontSize: 12, marginTop: 10 }}>id: {state?.id}</Text>
+            <Text style={{ fontSize: 12, marginTop: 5 }}>id: {state?.id}</Text>
           </Layout>
         </Layout>
 
-        <Text style={{ fontSize: 18, marginTop: 15 }}>
-          Email:{" "}
-          <Text style={{ fontSize: 18, fontWeight: "bold" }}>
-            {state?.email}
-          </Text>
-        </Text>
-
-        <Text style={{ fontSize: 18, marginTop: 15 }}>
-          Contact No:{" "}
-          <Text style={{ fontSize: 18, fontWeight: "bold" }}>
-            {state?.contact}
-          </Text>
-        </Text>
-
-        <Button
-          style={{ marginTop: 60, marginBottom: 80 }}
-          onPress={() => {
-            next.navigate("Register");
+        <Layout
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            padding: 10,
+            borderBottomWidth: 1,
           }}
         >
-          <Text>Edit Info</Text>
-        </Button>
+          <Icon style={style.icon} fill="#123020" name="email" />
+          <Text style={{ marginLeft: 15, fontSize: 18, fontWeight: "bold" }}>
+            {state?.email}
+          </Text>
+        </Layout>
+
+        <Layout
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            padding: 10,
+            borderBottomWidth: 1,
+          }}
+        >
+          <Icon style={style.icon} fill="#123020" name="phone" />
+          <Text style={{ marginLeft: 15, fontSize: 18, fontWeight: "bold" }}>
+            {state?.contact}
+          </Text>
+        </Layout>
+
+        <Layout style={{ marginTop: 60 }}>
+          <Button
+            style={{ marginBottom: 10 }}
+            onPress={() => {
+              next.navigate("Register");
+            }}
+          >
+            <Text>UPDATE PROFILE</Text>
+          </Button>
+
+          <Button
+            style={{ marginBottom: 10 }}
+            onPress={() => {
+              next.navigate("ProfImage");
+            }}
+          >
+            <Text>UPDATE IMAGE</Text>
+          </Button>
+
+          <Button
+            style={{ marginBottom: 10 }}
+            onPress={() => {
+              next.navigate("Password");
+            }}
+          >
+            <Text>UPDATE PASSWORD</Text>
+          </Button>
+        </Layout>
       </Layout>
     </React.Fragment>
   );
@@ -103,5 +139,9 @@ const style = StyleSheet.create({
   imgStyle: {
     width: 100,
     height: 100,
+  },
+  icon: {
+    width: 25,
+    height: 25,
   },
 });

@@ -144,6 +144,16 @@ export const TopProductCardComponent = ({ count, title, id, reference }) => {
 };
 
 export const ActivityLog = ({ item }) => {
+  const { product } = useSelector((state) => state.product);
+  const serviceName = (id) => {
+    let name;
+    product?.forEach((element) => {
+      if (id === element.id) {
+        name = element?.service_name;
+      }
+    });
+    return name;
+  };
   return (
     <Card style={{ marginHorizontal: 10, marginBottom: 5 }} disabled>
       <Layout style={{ marginBottom: 2 }}>
@@ -160,7 +170,7 @@ export const ActivityLog = ({ item }) => {
         }}
       >
         <Text style={{ color: "grey", fontSize: 14 }}>
-          {item?.type ?? "Full Service"}
+          {serviceName(item?.service_type) ?? "Full Service"}
         </Text>
         <Text style={{ color: "grey", fontSize: 14 }}>
           PHP {item?.price ?? 0.0}

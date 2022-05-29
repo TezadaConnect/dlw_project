@@ -22,6 +22,8 @@ import {
 } from "../helper/hooks/use_start_dep_hooks";
 import { registerIndieID } from "native-notify";
 import { collection, doc, getDoc } from "firebase/firestore";
+import ChangeImagePass from "../view/auth/change_image_pass";
+import ChangeImageProfile from "../view/auth/change_image_profile";
 
 const Stack = createNativeStackNavigator();
 
@@ -82,6 +84,8 @@ const AppRoute = () => {
           />
           <Stack.Screen name="Status" component={StatusView} />
           <Stack.Screen name="Notice" component={NoticeView} />
+          <Stack.Screen name="Password" component={ChangeImagePass} />
+          <Stack.Screen name="ProfImage" component={ChangeImageProfile} />
         </Stack.Navigator>
       </NavigationContainer>
     </React.Fragment>
