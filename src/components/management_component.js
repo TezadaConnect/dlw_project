@@ -16,8 +16,11 @@ import withReactContent from "sweetalert2-react-content";
 import CreateServiceModal from "./modals/create_service_modal";
 import { creationTypeEnum } from "../helpers/constant";
 import ProductService from "../services/product_service";
-import FinanceService from "../services/finance_service";
-import { useSelector } from "react-redux";
+import FinanceService, {
+  graphArrayGenerator,
+} from "../services/finance_service";
+import { useDispatch, useSelector } from "react-redux";
+import { setGraphData } from "../redux/slice/service_product_slice";
 
 const MySwal = withReactContent(Swal);
 
@@ -47,58 +50,13 @@ export const CARD_DATA = [
 
 export const DisplayManagementCard = ({ data }) => {
   const [state, setState] = useState(0);
-
-  const getValues = async () => {
-    const dateNowVar = new Date();
-    const newDate = {
-      month: dateNowVar.getMonth() + 1,
-      year: dateNowVar.getFullYear(),
-    };
-
-    const dateNowRange = {
-      min: new Date(newDate.year + "-" + newDate.month),
-      max: new Date(newDate.year, newDate.month, 0),
-    };
-
-    if (data.value === 0) {
-      let val1 = 0;
-      let val2 = 0;
-
-      await FinanceService.getAllPickupRequest(1, dateNowRange)
-        .then((res) => {
-          val1 = res;
-        })
-        .catch((err) => console.log(err));
-
-      await FinanceService.getAllPickupRequest(0, dateNowRange)
-        .then((res) => {
-          val2 = res;
-        })
-        .catch((err) => console.log(err));
-
-      return setState(val1.price + val2.price);
-    }
-
-    if (data.value === 1) {
-      await FinanceService.getAllPickupRequest(1, dateNowRange)
-        .then((res) => {
-          return setState(res.count);
-        })
-        .catch((err) => console.log(err));
-    }
-
-    if (data.value === 2) {
-      await FinanceService.getAllPickupRequest(0, dateNowRange)
-        .then((res) => {
-          return setState(res.count);
-        })
-        .catch((err) => console.log(err));
-    }
-  };
-
+  const { graphData } = useSelector((state) => state.service_product);
   useEffect(() => {
-    getValues();
-  }, [data]);
+    if (data.value === 0) setState(graphData.totalIncome);
+    if (data.value === 1) setState(graphData.pickupCount);
+    if (data.value === 2) setState(graphData.walkinCount);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [graphData]);
   return (
     <React.Fragment>
       <div>
@@ -117,86 +75,35 @@ export const DisplayManagementCard = ({ data }) => {
   );
 };
 
-const data = [
-  {
-    date: "March 1",
-    income: 4000,
-  },
-  {
-    date: "March 2",
-    income: 3000,
-  },
-  {
-    date: "March 3",
-    income: 2000,
-  },
-  {
-    date: "March 4",
-    income: 2780,
-  },
-  {
-    date: "March 5",
-    income: 1890,
-  },
-  {
-    date: "March 6",
-    income: 2390,
-  },
-  {
-    date: "March 7",
-    income: 3490,
-  },
-];
+export const GraphDisplay = () => {
+  const [date, setDate] = useState(new Date());
+  // const [graphData, setGraphData] = useState();
+  const { graphData } = useSelector((state) => state.service_product);
+  const dispatch = useDispatch();
 
-export const GraphDisplay = ({ board, setBoard }) => {
-  const [date, setDate] = useState(null);
-  const getDateValue = () => {
-    setBoard(3);
-    const dateNowVar = new Date(date);
-    const newDate = {
-      month: dateNowVar.getMonth() + 1,
-      year: dateNowVar.getFullYear(),
-    };
-
-    const dateNowRange = {
-      min: new Date(newDate.year + "-" + newDate.month),
-      max: new Date(newDate.year, newDate.month, 0),
-    };
-
-    FinanceService.getAllIncomeForTheMonth(dateNowRange, board)
-      .then((res) => setGraphData(res))
+  const graphSetter = async () => {
+    await FinanceService.getAllRequestGenerator()
+      .then((res) => {
+        dispatch(setGraphData(graphArrayGenerator(res, date)));
+      })
       .catch((err) => console.log(err.message));
   };
 
-  const [graphData, setGraphData] = useState();
-
   useEffect(() => {
-    if (board === 0) {
-      const dateNowVar = new Date();
-      const newDate = {
-        month: dateNowVar.getMonth() + 1,
-        year: dateNowVar.getFullYear(),
-      };
-
-      const dateNowRange = {
-        min: new Date(newDate.year + "-" + newDate.month),
-        max: new Date(newDate.year, newDate.month, 0),
-      };
-
-      FinanceService.getAllIncomeForTheMonth(dateNowRange, board)
-        .then((res) => setGraphData(res))
-        .catch((err) => console.log(err.message));
-    }
-  }, [board]);
-
-  const arrBoardHolder = ["All", "Pickup", "Requests"];
+    FinanceService.getAllRequestGenerator()
+      .then((res) => {
+        dispatch(setGraphData(graphArrayGenerator(res, date)));
+      })
+      .catch((err) => console.log(err.message));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <React.Fragment>
       <div className="h-full flex flex-col justify-between">
         <div className="mb-3 text-2xl font-bold flex flex-row justify-between flex-grow">
           <div>MONTHLY INCOME CHART</div>
-          <div>{arrBoardHolder[board]}</div>
+
           <div className="flex flex-row gap-4">
             <div className="text-base">
               <DatePicker
@@ -212,7 +119,9 @@ export const GraphDisplay = ({ board, setBoard }) => {
               />
             </div>
             <button
-              onClick={() => getDateValue()}
+              onClick={() => {
+                graphSetter();
+              }}
               className="px-5 py-3 text-base rounded bg-black text-white hover:bg-gray-900 active:translate-y-1"
             >
               Search
@@ -221,7 +130,7 @@ export const GraphDisplay = ({ board, setBoard }) => {
         </div>
         <div className="h-full w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart width={150} height={100} data={graphData}>
+            <BarChart width={150} height={100} data={graphData?.DATELIST}>
               <Tooltip wrapperStyle={{ backgroundColor: "blue" }} />
               <XAxis dataKey="date" />
               <YAxis dataKey="income" />

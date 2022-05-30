@@ -13,7 +13,6 @@ import {
 } from "../components/management_component";
 import CreateServiceModal from "../components/modals/create_service_modal";
 import { useSelector } from "react-redux";
-import { useGetProducts } from "../helpers/hooks/useStartDepHooks";
 import PrintableCustomerTable from "../components/tables/printable_customer_table";
 
 const MySwal = withReactContent(Swal);
@@ -43,6 +42,7 @@ const ManagementView = () => {
 
   useEffect(() => {
     if (user?.role === "admin") return setPage(3);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -67,20 +67,15 @@ const ManagementView = () => {
 export default ManagementView;
 
 const CashFlowDisplay = () => {
-  const [board, setBoard] = useState(0);
   return (
     <div>
       <div className="flex flex-row gap-3 h-full">
         <div className="w-9/12">
-          <GraphDisplay board={board} setBoard={setBoard} />
+          <GraphDisplay />
         </div>
         <div className="w-3/12 flex flex-col gap-3">
           {CARD_DATA.map((element, key) => {
-            return (
-              <div key={key} onClick={() => setBoard(key)}>
-                <DisplayManagementCard data={element} />
-              </div>
-            );
+            return <DisplayManagementCard key={key} data={element} />;
           })}
         </div>
       </div>

@@ -3,9 +3,7 @@ import { usePagination, useTable } from "react-table";
 import FinanceService, {
   arrayOfDateGenerator,
 } from "../../services/finance_service";
-import generatePDF from "../pdfs/selected_date_report";
 import DatePicker from "react-datepicker";
-import { MySwal } from "../../helpers/constant";
 import { errorPopup } from "../common/response_component";
 import selectedDateReport from "../pdfs/selected_date_report";
 
@@ -61,11 +59,10 @@ const PrintableCustomerTable = () => {
     FinanceService.getAllRequestGenerator()
       .then((res) => {
         setClient(res);
-        setDisplayData(
-          arrayOfDateGenerator(client, datePick.from, datePick.to)
-        );
+        setDisplayData(arrayOfDateGenerator(res, datePick.from, datePick.to));
       })
       .catch((err) => console.log(err.message));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -17,7 +17,7 @@ export const serviceProductSlice = createSlice({
         done: [],
       },
     },
-
+    graphData: [],
     products: [],
   },
   reducers: {
@@ -30,10 +30,13 @@ export const serviceProductSlice = createSlice({
     setProduct: (state, action) => {
       state.products = action.payload;
     },
+    setGraphData: (state, action) => {
+      state.graphData = action.payload;
+    },
   },
 });
 
-export const { setWalkInData, setPickUpData, setProduct } =
+export const { setWalkInData, setPickUpData, setProduct, setGraphData } =
   serviceProductSlice.actions;
 
 export default serviceProductSlice.reducer;
