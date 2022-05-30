@@ -15,7 +15,7 @@ import {
   ref,
   uploadBytes,
 } from "firebase/storage";
-import { authentication, firestore } from "../config/firebase_config";
+import { authentication, firestore, storage } from "../config/firebase_config";
 
 export const USERS_QUERY = collection(firestore, "users");
 
@@ -43,7 +43,7 @@ const login = async (values) => {
  * @param {object} values object with email and password keys and others
  */
 const register = async (values) => {
-  const { email, password, fname, lname, contact } = values;
+  const { email, password, fname, lname, contact, location } = values;
   try {
     const user_fname = (fname.charAt(0).toUpperCase() + fname.slice(1)).trim();
     const user_lname = (lname.charAt(0).toUpperCase() + lname.slice(1)).trim();
@@ -64,6 +64,8 @@ const register = async (values) => {
       role: "client",
       contact: contact,
       terms: false,
+      img_path: "",
+      location: location,
     });
 
     return user;
@@ -73,7 +75,7 @@ const register = async (values) => {
 };
 
 const editProfile = async (values) => {
-  const { email, fname, lname, contact } = values;
+  const { email, fname, lname, contact, location } = values;
   const user_fname = (fname.charAt(0).toUpperCase() + fname.slice(1)).trim();
   const user_lname = (lname.charAt(0).toUpperCase() + lname.slice(1)).trim();
   let user = {};
@@ -92,6 +94,7 @@ const editProfile = async (values) => {
           fname: user_fname,
           lname: user_lname,
           contact: contact,
+          location: location,
         });
       }
       return user;
@@ -144,23 +147,29 @@ const changePassword = async (password) => {
   }
 };
 
-const updateProfileImage = async (value, file) => {
-  const { img_path, userId } = value;
+const updateProfileImage = async (id, file) => {
+  const userData = await getDoc(doc(USERS_QUERY, id));
+  const img_path = userData.data().img_path;
+  console.log(img_path);
   try {
     if (img_path !== "") {
-      const PRODDUC_DEL_REF = ref(storage, img_path);
-      deleteObject(PRODDUC_DEL_REF);
+      if (img_path !== undefined) {
+        const PRODDUC_DEL_REF = ref(storage, img_path);
+        deleteObject(PRODDUC_DEL_REF);
+      }
     }
 
-    const imgName = Math.round(new Date() / 1000) + "-" + file.name ?? "file";
+    const blobContainer = await getPictureBlob(file);
+
+    const imgName = Math.round(new Date() / 1000) + "-" + id ?? "file";
     let img_url = "";
-    const PRODUCT_IMG_REF = ref(storage, "app_img/" + imgName);
-    const uploadImage = await uploadBytes(PRODUCT_IMG_REF, file);
+    const PRODUCT_IMG_REF = ref(storage, "profile/" + imgName + ".jpg");
+    const uploadImage = await uploadBytes(PRODUCT_IMG_REF, blobContainer);
     await getDownloadURL(uploadImage.ref).then((url) => (img_url = url));
 
-    await updateDoc(doc(USERS_QUERY, userId), {
+    await updateDoc(doc(USERS_QUERY, id), {
       img_url: img_url,
-      img_alt: "app-icn-alt",
+      img_alt: imgName,
       img_path: PRODUCT_IMG_REF.fullPath,
     });
   } catch (error) {
@@ -183,3 +192,20 @@ const AuthService = {
 };
 
 export default AuthService;
+
+const getPictureBlob = (uri) => {
+  // https://github.com/expo/expo/issues/2402#issuecomment-443726662
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+      resolve(xhr.response);
+    };
+    xhr.onerror = function (e) {
+      console.log(e);
+      reject(new TypeError("Network request failed"));
+    };
+    xhr.responseType = "blob";
+    xhr.open("GET", uri, true);
+    xhr.send(null);
+  });
+};

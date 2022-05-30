@@ -34,23 +34,31 @@ const ProfileView = () => {
           fname: collection[0].fname,
           lname: collection[0].lname,
           contact: collection[0].contact,
+          img_url: collection[0].img_url,
+          location: collection[0].location,
         })
       );
     });
     return unSub;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   return (
     <React.Fragment>
       <Layout style={{ marginHorizontal: 10 }}>
         <Layout style={style.imgLayout}>
-          <Layout>
+          <Layout style={style.imageAvatar}>
             <Image
               source={{
-                uri: "https://cdn-icons-png.flaticon.com/512/219/219983.png",
+                uri: user?.img_url,
               }}
-              resizeMode="contain"
-              style={style.imgStyle}
+              resizeMode="cover"
+              style={{
+                alignSelf: "center",
+                width: 100,
+                height: 100,
+                overflow: "hidden",
+              }}
             />
           </Layout>
           <Layout style={{ marginLeft: 10 }}>
@@ -88,6 +96,21 @@ const ProfileView = () => {
           <Icon style={style.icon} fill="#123020" name="phone" />
           <Text style={{ marginLeft: 15, fontSize: 18, fontWeight: "bold" }}>
             {state?.contact}
+          </Text>
+        </Layout>
+
+        <Layout
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            padding: 10,
+            borderBottomWidth: 1,
+          }}
+        >
+          <Icon style={style.icon} fill="#123020" name="map" />
+          <Text style={{ marginLeft: 15, fontSize: 13, fontWeight: "normal" }}>
+            {state?.location}
           </Text>
         </Layout>
 
@@ -143,5 +166,15 @@ const style = StyleSheet.create({
   icon: {
     width: 25,
     height: 25,
+  },
+  imageAvatar: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: 100,
+    height: 100,
+    overflow: "hidden",
+    borderRadius: 100,
+    backgroundColor: "gray",
   },
 });

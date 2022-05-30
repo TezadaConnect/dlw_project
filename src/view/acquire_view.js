@@ -6,6 +6,7 @@ import {
   TopNavigationAction,
   Text,
   Button,
+  Spinner,
 } from "@ui-kitten/components";
 import { useFormik } from "formik";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -17,7 +18,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { ScrollView } from "react-native-gesture-handler";
 import RequestService from "../service/request_service";
 import { showMessage } from "react-native-flash-message";
-import { setBusy } from "../redux/slices/response_slice";
 
 const numberValidation = Yup.number()
   .typeError("Must be a number.")
@@ -31,10 +31,11 @@ const AcquireView = () => {
   const [prodDetail, setProdDetail] = useState();
   const [rateString, setRateString] = useState([]);
   const next = useNavigation();
+
   const acquireForm = useFormik({
     enableReinitialize: true,
     initialValues: {
-      address: "",
+      address: user?.location ?? "",
       contact: user?.contact ?? "",
       load: "",
       service_type: prodDetail?.id ?? "",
@@ -47,7 +48,7 @@ const AcquireView = () => {
       load: Yup.string().required("This Field is required."),
     }),
     onSubmit: async (values) => {
-      dispatch(setBusy(true));
+      setLoading(true);
       await RequestService.createNewRequest(values)
         .then(() => {
           showMessage({
@@ -56,8 +57,6 @@ const AcquireView = () => {
             icon: "success",
             type: "success",
           });
-          dispatch(setBusy(false));
-          next.navigate("Status");
         })
         .catch((err) => {
           showMessage({
@@ -66,8 +65,9 @@ const AcquireView = () => {
             type: "danger",
             icon: "danger",
           });
-          dispatch(setBusy(false));
         });
+      setLoading(false);
+      next.navigate("Status");
     },
   });
 
@@ -93,6 +93,24 @@ const AcquireView = () => {
     });
     setRateString(rateContainer);
   }, [prodDetail]);
+
+  const [load, setLoading] = useState();
+
+  if (load === true) {
+    return (
+      <Layout
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Spinner size="giant" />
+      </Layout>
+    );
+  }
 
   return (
     <SafeAreaView>
@@ -166,7 +184,11 @@ const AcquireView = () => {
 
               <Button
                 style={{ marginTop: 20 }}
-                onPress={() => acquireForm.handleSubmit()}
+                onPress={() => {
+                  if (load !== true) {
+                    acquireForm.handleSubmit();
+                  }
+                }}
               >
                 <Text>SEND</Text>
               </Button>

@@ -2,16 +2,17 @@ import {
   Button,
   Icon,
   Layout,
+  Spinner,
   Text,
   TopNavigation,
   TopNavigationAction,
 } from "@ui-kitten/components";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Image, StyleSheet } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { layouts } from "../../helper/styles";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { launchImageLibraryAsync, MediaTypeOptions } from "expo-image-picker";
 import { showMessage } from "react-native-flash-message";
@@ -20,8 +21,12 @@ import AuthService from "../../service/auth_service";
 const ChangeImageProfile = () => {
   const next = useNavigation();
   const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.user);
 
-  const [state, setState] = useState(null);
+  const [state, setState] = useState({
+    uri: null,
+    base64: null,
+  });
 
   const openGalery = async () => {
     const option = {
@@ -33,9 +38,43 @@ const ChangeImageProfile = () => {
       quality: 1,
     };
 
-    const sean = await launchImageLibraryAsync({});
-    AuthService.updateProfileImage("", sean.base64);
-    setState(sean.uri);
+    const img_container = await launchImageLibraryAsync({});
+    setState({ uri: img_container.uri, base64: img_container.base64 });
+  };
+
+  const submitImage = () => {
+    if (state.uri !== null) {
+      setLoading(true);
+      return AuthService.updateProfileImage(user?.id, state.uri)
+        .then(() => {
+          setLoading(false);
+
+          showMessage({
+            message: "Success",
+            description: "Image was Uploaded sent",
+            icon: "success",
+            type: "success",
+          });
+
+          return next.goBack();
+        })
+        .catch((err) => {
+          setLoading(false);
+          return showMessage({
+            message: "Failed",
+            description: err.message,
+            type: "danger",
+            icon: "danger",
+          });
+        });
+    }
+
+    return showMessage({
+      message: "Failed",
+      description: "Please Choose another image.",
+      type: "danger",
+      icon: "danger",
+    });
   };
 
   const BackAction = () => {
@@ -43,6 +82,24 @@ const ChangeImageProfile = () => {
       <TopNavigationAction icon={BackIcon} onPress={() => next.goBack()} />
     );
   };
+
+  const [load, setLoading] = useState();
+
+  if (load === true) {
+    return (
+      <Layout
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Spinner size="giant" />
+      </Layout>
+    );
+  }
 
   return (
     <SafeAreaView>
@@ -52,18 +109,21 @@ const ChangeImageProfile = () => {
           title={() => <Text category="h6">Change Profile</Text>}
         />
 
-        <Layout style={layouts.padding}>
-          <Layout style={style.imgLayout}>
+        <Layout style={style.layoutImage}>
+          <View style={style.imgLayout}>
             <Image
               source={{
-                uri:
-                  state ??
-                  "https://cdn-icons-png.flaticon.com/512/219/219983.png",
+                uri: state.uri ?? user?.img_url,
               }}
-              resizeMode="contain"
-              style={{ width: 200, height: 200, borderRadius: 100 }}
+              resizeMode="cover"
+              style={{
+                alignSelf: "center",
+                width: 200,
+                height: 200,
+                overflow: "hidden",
+              }}
             />
-          </Layout>
+          </View>
         </Layout>
 
         <Layout style={layouts.padding}>
@@ -73,8 +133,8 @@ const ChangeImageProfile = () => {
             </Button>
           </Layout>
 
-          <Button onPress={() => openGalery()}>
-            <Text>SUBMIT CHANGES</Text>
+          <Button onPress={() => submitImage()}>
+            <Text>UPLOAD IMAGE</Text>
           </Button>
         </Layout>
       </Layout>
@@ -89,14 +149,21 @@ const style = StyleSheet.create({
     margin: 10,
     textAlign: "center",
   },
-  imgLayout: {
-    marginBottom: 30,
-    textAlign: "center",
+  layoutImage: {
+    paddingHorizontal: 15,
     display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
     alignItems: "center",
-    marginTop: 10,
+    justifyContent: "center",
+  },
+  imgLayout: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: 200,
+    height: 200,
+    overflow: "hidden",
+    borderRadius: 300,
+    backgroundColor: "gray",
   },
 });
 

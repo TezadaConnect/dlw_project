@@ -102,10 +102,10 @@ const useAuthHook = () => {
   const editProfile = async (values) => {
     dispatch(setBusy(true));
     await AuthService.editProfile(values)
-      .then(async (currentUser) => {
+      .then(async () => {
         showMessage({
           message: "New User",
-          description: "Account Successfully Created",
+          description: "Account Successfully Updated",
           type: "success",
           icon: "success",
         });

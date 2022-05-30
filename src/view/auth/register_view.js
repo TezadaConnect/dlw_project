@@ -27,6 +27,7 @@ const RegisterView = () => {
       password: "",
       fname: user !== null ? user?.fname : "",
       lname: user !== null ? user?.lname : "",
+      location: user !== null ? user?.location : "",
       contact: user !== null ? user?.contact : "",
       c_password: "",
     },
@@ -38,6 +39,7 @@ const RegisterView = () => {
         user === null ? Yup.string().required("This field is required") : null,
       fname: Yup.string().required("This field is required"),
       lname: Yup.string().required("This field is required"),
+      location: Yup.string().required("This field is required"),
       contact: Yup.number()
         .typeError("Must be a number")
         .required("This field is required"),
@@ -93,6 +95,13 @@ const RegisterView = () => {
               name="contact"
               label="Contact No."
               placeholder="contact no."
+              formik={signupForm}
+            />
+
+            <TextField
+              name="location"
+              label="Address"
+              placeholder="address"
               formik={signupForm}
             />
 

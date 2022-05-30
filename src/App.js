@@ -11,7 +11,7 @@ import registerNNPushToken from "native-notify";
 
 export default function App() {
   registerNNPushToken(2746, "33W2w1mWUguk3y6DPPFDWL");
-
+  console.disableYellowBox = true;
   return (
     <Provider store={store}>
       <IconRegistry icons={EvaIconsPack} />
