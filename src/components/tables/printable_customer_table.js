@@ -1,15 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { usePagination, useTable } from "react-table";
-import FinanceService from "../../services/finance_service";
-import generatePDF from "../pdfs/monthly_report";
+import FinanceService, {
+  arrayOfDateGenerator,
+} from "../../services/finance_service";
+import generatePDF from "../pdfs/selected_date_report";
 import DatePicker from "react-datepicker";
+import { MySwal } from "../../helpers/constant";
+import { errorPopup } from "../common/response_component";
+import selectedDateReport from "../pdfs/selected_date_report";
 
 const PrintableCustomerTable = () => {
   const [client, setClient] = useState([]);
-  const [selectableDate, setSelectableDate] = useState({
-    year: new Date().getFullYear(),
-    type: 0,
-  });
 
   const columns = useMemo(
     () => [
@@ -18,79 +19,87 @@ const PrintableCustomerTable = () => {
         accessor: "date",
       },
       {
+        Header: "Total Request",
+        accessor: "totalRequestCount",
+      },
+      {
         Header: "Number of Pickup",
-        accessor: "pickup",
+        accessor: "pickUpCount",
       },
       {
         Header: "Number of Walkin.",
-        accessor: "walking",
+        accessor: "WalkInCount",
       },
       {
         Header: "Income",
-        accessor: "income",
+        accessor: "incomeCount",
       },
     ],
     []
   );
 
+  const [displayData, setDisplayData] = useState([]);
   const data = useMemo(
-    () => client, // eslint-disable-next-line react-hooks/exhaustive-deps
-    [client]
+    () => displayData, // eslint-disable-next-line react-hooks/exhaustive-deps
+    [displayData]
   );
 
+  const dateObserver = new Date();
+  const [datePick, setDatePick] = useState({
+    from: new Date(dateObserver.getFullYear(), dateObserver.getMonth(), 1),
+    to: new Date(dateObserver.getFullYear(), dateObserver.getMonth() + 1, 0),
+  });
+
+  const searchForData = () => {
+    if (new Date(datePick.from) > new Date(datePick.to)) {
+      return errorPopup("Date To must be later than Date From");
+    }
+    setDisplayData(arrayOfDateGenerator(client, datePick.from, datePick.to));
+  };
+
   useEffect(() => {
-    FinanceService.getRequestPrintableData(
-      selectableDate.year,
-      selectableDate.type
-    )
+    FinanceService.getAllRequestGenerator()
       .then((res) => {
         setClient(res);
+        setDisplayData(
+          arrayOfDateGenerator(client, datePick.from, datePick.to)
+        );
       })
       .catch((err) => console.log(err.message));
-  }, [selectableDate]);
+  }, []);
 
   return (
     <React.Fragment>
       <div className="mb-5 flex flex-row justify-between items-center">
-        <div className="font-bold text-2xl">
-          {selectableDate.type === 0 ? "MONTHLY " : "WEEKLY "}
-          REPORT OF YEAR{" "}
-          {selectableDate.year !== undefined
-            ? selectableDate.year
-            : new Date().getFullYear()}
-        </div>
+        <div className="font-bold text-2xl">REPORT SECTION</div>
         <div className="flex flex-row gap-2">
           <div className="text-base">
             <DatePicker
-              onChange={(date) => {
-                setSelectableDate({
-                  ...selectableDate,
-                  year: new Date(date).getFullYear(),
-                });
-              }}
+              selected={datePick.from}
+              placeholderText="From"
+              onChange={(date) => setDatePick({ ...datePick, from: date })}
               className="text-base appearance-none p-3 bg-gray-100 box-border border border-gray-300 rounded focus:outline-none focus:border-gray-600 object-contain"
-              dateFormat="yyyy"
-              showYearPicker
+            />
+          </div>
+          <div className="text-base">
+            <DatePicker
+              selected={datePick.to}
+              placeholderText="To"
+              onChange={(date) => setDatePick({ ...datePick, to: date })}
+              className="text-base appearance-none p-3 bg-gray-100 box-border border border-gray-300 rounded focus:outline-none focus:border-gray-600 object-contain"
             />
           </div>
           <button
             className="px-5 py-3 rounded bg-black text-white hover:bg-gray-900 active:translate-y-1"
-            onClick={() => setSelectableDate({ ...selectableDate, type: 1 })}
+            onClick={() => searchForData()}
           >
-            Weekly
-          </button>
-
-          <button
-            className="px-5 py-3 rounded bg-black text-white hover:bg-gray-900 active:translate-y-1"
-            onClick={() => setSelectableDate({ ...selectableDate, type: 0 })}
-          >
-            Monthly
+            Search
           </button>
 
           <button
             className="px-5 py-3 rounded bg-black text-white hover:bg-gray-900 active:translate-y-1"
             onClick={() =>
-              window.open(generatePDF(client, selectableDate), "_blank")
+              window.open(selectedDateReport(displayData, datePick), "_blank")
             }
           >
             Generate

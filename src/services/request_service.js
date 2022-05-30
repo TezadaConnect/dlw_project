@@ -10,7 +10,7 @@ import {
 } from "@firebase/firestore";
 import { firestore } from "../config/firebase_config";
 import AuditTrailService, { ACTION_RECORD } from "./audit_trail_service";
-import ProductService from "./product_service";
+import ProductService, { PRODUCT_QUERY } from "./product_service";
 
 export const WALKIN_QUERY = collection(firestore, "walkin_requests");
 export const PICKUP_QUERY = collection(firestore, "pickup_request");
@@ -180,6 +180,12 @@ const readOneRequest = async (id, is_walk = true) => {
 };
 
 const GetAllMergeRequest = async () => {
+  const product = await getDocs(PRODUCT_QUERY);
+  const productList = [];
+  product?.forEach((element) => {
+    productList.push({ ...element.data(), id: element.id });
+  });
+
   const qry_one = await getDocs(
     query(PICKUP_QUERY, where("status", "==", "DONE"))
   );
@@ -188,26 +194,32 @@ const GetAllMergeRequest = async () => {
   );
   const arrayHolder = [];
   qry_one.forEach((value) => {
-    const date = value.data().recieve_date.toDate().toString();
-    arrayHolder.push({
-      id: value.id,
-      ...value.data(),
-      request_type: "Pick-Up",
-      recieve_date: date,
-    });
+    if (value.data().recieve_date !== undefined) {
+      const date = value.data().recieve_date.toDate().toString();
+      console.log(value.data().service_type);
+      arrayHolder.push({
+        id: value.id,
+        ...value.data(),
+        service_type: convertProducts(value.data().service_type, productList),
+        request_type: "Pick-Up",
+        recieve_date: dataRequest(date),
+      });
+    }
   });
 
   qry_two.forEach((value) => {
-    const date = value.data().recieve_date.toDate().toString();
-    arrayHolder.push({
-      id: value.id,
-      ...value.data(),
-      request_type: "Walk-In",
-      recieve_date: date,
-    });
+    if (value.data().recieve_date !== undefined) {
+      const date = value.data().recieve_date.toDate().toString();
+      console.log(value.data().service_type);
+      arrayHolder.push({
+        id: value.id,
+        ...value.data(),
+        service_type: convertProducts(value.data().service_type, productList),
+        request_type: "Walk-In",
+        recieve_date: dataRequest(date),
+      });
+    }
   });
-
-  console.log(arrayHolder);
 
   return arrayHolder.sort((a, b) => {
     return new Date(b.recieve_date) - new Date(a.recieve_date);
@@ -224,3 +236,22 @@ const RequestService = {
   GetAllMergeRequest,
 };
 export default RequestService;
+
+export const convertProducts = (id, product) => {
+  let itemArr = {};
+  product?.forEach((element) => {
+    itemArr = { ...itemArr, [element?.id]: element.service_name };
+  });
+  return itemArr[id] ?? "";
+};
+
+export const dataRequest = (date) => {
+  return new Date(date).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  });
+};

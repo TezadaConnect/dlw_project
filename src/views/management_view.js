@@ -93,7 +93,7 @@ const ProductServices = () => {
   const { user } = useSelector((state) => state.user);
   return (
     <React.Fragment>
-      <div className="object-contain flex flex-row justify-between items-center">
+      <div className="mb-5 object-contain flex flex-row justify-between items-center">
         <p className="text-xl text-gray-500 font-bold">ALL SERVICES</p>
         <button
           onClick={() => createNewProduct(user?.id)}

@@ -1,3 +1,6 @@
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+
 export const creationTypeEnum = { new: "new", update: "update" };
 export const roleTypeEnum = {
   client: "client",
@@ -11,3 +14,5 @@ export const roleSelect = [
   { label: "Admin", value: roleTypeEnum.admin },
   { label: "Employee", value: roleTypeEnum.employee },
 ];
+
+export const MySwal = withReactContent(Swal);

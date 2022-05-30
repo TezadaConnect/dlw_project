@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+tr {
+  @apply hover:bg-gray-300;
+}
