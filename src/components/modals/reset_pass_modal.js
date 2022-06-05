@@ -30,7 +30,12 @@ const ResetPasswordModal = ({ value, moderator }) => {
     onSubmit: async (values) => {
       setBusy(true);
       await axios
-        .post(API_HOST + "reset-password", values, { withCredentials: true })
+        .post(API_HOST + "reset-password", values, {
+          withCredentials: true,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+          },
+        })
         .then(() => {
           successPopup("Password Reset");
         })

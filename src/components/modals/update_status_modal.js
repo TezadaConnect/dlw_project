@@ -4,7 +4,6 @@ import { SelectComponent } from "../common/input_component";
 import * as Yup from "yup";
 import RequestService from "../../services/request_service";
 import Swal from "sweetalert2";
-import { useSelector } from "react-redux";
 import axios from "axios";
 
 const REQUESTS_TYPE = {
@@ -128,8 +127,6 @@ const UpdateStatusModal = ({
 
       return null;
     });
-
-    console.log(index);
     if (index > -1) {
       arrayHolder.splice(0, index);
     }

@@ -1,4 +1,5 @@
 package-lock.json
 node_modules
 src/provider/slice/copy.js
+build
 #src/config/firebase_config.js

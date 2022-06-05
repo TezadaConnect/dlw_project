@@ -52,6 +52,9 @@ const CreateUserModal = ({
         return await axios
           .post(API_HOST + "add-user", values, {
             withCredentials: true,
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+            },
           })
           .then(() => successPopup("Created New Account"))
           .catch((err) => errorPopup(err.message));
@@ -59,6 +62,9 @@ const CreateUserModal = ({
       await axios
         .post(API_HOST + "update-user", values, {
           withCredentials: true,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+          },
         })
         .then(() => successPopup("Updateded Successfully"))
         .catch((err) => errorPopup(err.message));

@@ -1,9 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
   MdAccountCircle,
-  MdFiberManualRecord,
   MdNote,
-  MdNoteAdd,
   MdSettingsApplications,
 } from "react-icons/md";
 import { useTable } from "react-table/dist/react-table.development";
@@ -171,6 +169,7 @@ const TableView = ({ value }) => {
         ),
       },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
@@ -216,6 +215,7 @@ const AccountsTable = ({ columns, data, value }) => {
 
   useEffect(() => {
     setGlobalFilter(value);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   return (
@@ -278,7 +278,12 @@ const deleteAccountPopup = (id, moderator) => {
         .post(
           API_HOST + "delete-user",
           { userId: id, moderator: moderator },
-          { withCredentials: true }
+          {
+            withCredentials: true,
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+            },
+          }
         )
         .catch((err) => console.log(err?.message));
     },
