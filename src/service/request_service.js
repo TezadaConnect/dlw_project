@@ -49,7 +49,7 @@ const createNewRequest = async (value) => {
       subID: user_id,
       appId: 2746,
       appToken: "33W2w1mWUguk3y6DPPFDWL",
-      title: "Your Item is listed as Pending!",
+      title: "YOUR ITEM WAS LISTED AS PENDING!",
       message: "Please wait for the staff to accept your Request!",
     })
     .catch((err) => console.log(err.message));

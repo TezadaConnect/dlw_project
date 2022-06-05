@@ -1,4 +1,3 @@
-import { useNavigation } from "@react-navigation/native";
 import {
   Layout,
   Text,
@@ -8,7 +7,7 @@ import {
   BottomNavigation,
   BottomNavigationTab,
 } from "@ui-kitten/components";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useAuthHook from "../helper/hooks/auth_hook";
 import { StyleSheet } from "react-native";
@@ -18,13 +17,13 @@ import {
 } from "../components/home_components";
 import { layouts } from "../helper/styles";
 import { ScrollView } from "react-native-gesture-handler";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import BottomSheetComponent from "../components/common/bottom-sheet";
 import { PortalProvider } from "@gorhom/portal";
-import { getUnreadIndieNotificationInboxCount } from "native-notify";
 import NotificationView from "./notification_view";
 import ActivityView from "./activity_view";
 import ProfileView from "./profile_view";
+import { setReadStatus, setUnreadStatus } from "../redux/slices/response_slice";
 
 const TITLE_ARR = ["Services", "Activity", "Notification", "Profile"];
 const HomeView = () => {
@@ -32,9 +31,15 @@ const HomeView = () => {
 
   const modalRef = useRef(null);
 
+  const dispatch = useDispatch();
+
   checkAgreement();
 
   const topState = useBottomNavigationState();
+
+  useEffect(() => {
+    if (topState.selectedIndex === 2) dispatch(setUnreadStatus(true));
+  }, [topState.selectedIndex]);
 
   return (
     <SafeAreaView>
@@ -112,19 +117,7 @@ const style = StyleSheet.create({
 });
 
 const BellIcon = (props) => {
-  const { user } = useSelector((state) => state.user);
-  const { refresh } = useSelector((state) => state.response);
-  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
-
-  useEffect(async () => {
-    let unreadCount = await getUnreadIndieNotificationInboxCount(
-      user?.id,
-      2746,
-      "33W2w1mWUguk3y6DPPFDWL"
-    );
-    setUnreadNotificationCount(unreadCount);
-  }, [refresh]);
-
+  const { unreadNotificationCount } = useSelector((state) => state.response);
   return (
     <React.Fragment>
       <Layout style={{ position: "relative" }}>
@@ -163,7 +156,7 @@ const BottomNavigationAccessoriesShowcase = ({ topState }) => {
       <BottomNavigation style={style.bottomNavigation} {...topState}>
         <BottomNavigationTab title="HOME" icon={HomeIcon} />
         <BottomNavigationTab title="ACTIVITY" icon={EmailIcon} />
-        <BottomNavigationTab title="NOTIFICATION" icon={BellIcon} />
+        <BottomNavigationTab title="NOTIFICATION" icon={<BellIcon />} />
         <BottomNavigationTab title="PROFILE" icon={PersonIcon} />
       </BottomNavigation>
     </React.Fragment>
@@ -198,6 +191,7 @@ const HomeViewStaff = ({ modalRef }) => {
 
       <Text style={{ fontWeight: "bold", margin: 10 }}>Top 3 Services</Text>
       <Layout style={{ margin: 5 }}>
+        {console.log(topProduct)}
         {topProduct.map((item, key) => {
           return (
             <TopProductCardComponent

@@ -42,8 +42,10 @@ const PICKUP = [
 ];
 
 const StatusView = () => {
-  const { currentRequest, time } = useSelector((state) => state.product);
-  const [counter, setCounter] = useState(0);
+  const { currentRequest, time, counter } = useSelector(
+    (state) => state.product
+  );
+
   const dispatch = useDispatch();
   const [title, setTitle] = useState("Waiting for response");
   const colorValue = {
@@ -65,16 +67,6 @@ const StatusView = () => {
   useEffect(() => {
     setTitle(setChangesForRemainingDate(counter));
   }, [counter]);
-
-  useEffect(() => {
-    const stateOfItem = currentRequest?.status ?? null;
-    if (stateOfItem === PICKUP[0]) return setCounter(0);
-    if (stateOfItem === PICKUP[1]) return setCounter(1);
-    if (stateOfItem === PICKUP[8]) return setCounter(3);
-    if (stateOfItem === PICKUP[9]) return setCounter(4);
-    if (stateOfItem === PICKUP[2]) return setCounter(5);
-    return setCounter(2);
-  }, [currentRequest?.status ?? null]);
 
   return (
     <SafeAreaView>

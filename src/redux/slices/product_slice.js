@@ -7,6 +7,7 @@ export const productSlice = createSlice({
     topProduct: [],
     currentRequest: null,
     time: 0,
+    counter: 0,
   },
   reducers: {
     setProduct: (state, action) => {
@@ -25,13 +26,14 @@ export const productSlice = createSlice({
     setCurrentRequest: (state, action) => {
       state.currentRequest = action.payload;
     },
+    setCounter: (state) => {
+      const status = state.currentRequest?.status;
+      state.counter = parseInt(getValueOfStatus(status));
+    },
     setTopProduct: (state, action) => {
       const { payload } = action;
-
       const arrHolder = [];
-
       const count = {};
-
       payload.forEach((element) => {
         arrHolder.push(element.service_type);
       });
@@ -41,11 +43,14 @@ export const productSlice = createSlice({
       });
 
       const sortedList = [];
+
       Object.keys(count)
         .sort((a, b) => count[a] - count[b])
         .forEach((key) => {
           sortedList.push([key, count[key]]);
         });
+
+      console.log(sortedList);
 
       let final_list = [];
 
@@ -74,6 +79,35 @@ export const productSlice = createSlice({
   },
 });
 
-export const { setProduct, setCurrentRequest, setTopProduct, setTime } =
-  productSlice.actions;
+const getValueOfStatus = (status = null) => {
+  const stateOfItem = status ?? null;
+  if (stateOfItem === null) return 0;
+  if (stateOfItem === PICKUP[0]) return 0;
+  if (stateOfItem === PICKUP[1]) return 1;
+  if (stateOfItem === PICKUP[8]) return 3;
+  if (stateOfItem === PICKUP[9]) return 4;
+  if (stateOfItem === PICKUP[2]) return 5;
+  return 2;
+};
+
+const PICKUP = [
+  "WAITING",
+  "PICKUP",
+  "REJECT",
+  "WASH",
+  "HANDWASH",
+  "DRY",
+  "IRON",
+  "FOLD",
+  "DELIVERY",
+  "DONE",
+];
+
+export const {
+  setProduct,
+  setCurrentRequest,
+  setTopProduct,
+  setTime,
+  setCounter,
+} = productSlice.actions;
 export default productSlice.reducer;

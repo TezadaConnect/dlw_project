@@ -8,11 +8,12 @@ import { useSelector } from "react-redux";
 const ActivityView = () => {
   const [transaction, setTransaction] = useState();
   const { user } = useSelector((state) => state.user);
-  useEffect(() => {}, [
+  const { refresh } = useSelector((state) => state.response);
+  useEffect(() => {
     RequestService.getMyTransactions(user?.id)
       .then((res) => setTransaction(res))
-      .catch((err) => console.log(err.message)),
-  ]);
+      .catch((err) => console.log(err.message));
+  }, [refresh]);
   return (
     <Layout style={{ marginBottom: 170 }}>
       <ScrollView>

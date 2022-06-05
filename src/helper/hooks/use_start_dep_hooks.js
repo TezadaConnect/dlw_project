@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { onSnapshot, orderBy, limit, query, where } from "firebase/firestore";
 import {
+  setCounter,
   setCurrentRequest,
   setProduct,
   setTime,
@@ -9,8 +10,14 @@ import {
 } from "../../redux/slices/product_slice";
 import { PRODUCT_QUERY } from "../../service/product_service";
 import { PICKUP_QUERY } from "../../service/request_service";
-import { setProject } from "../../redux/slices/response_slice";
+import {
+  setProject,
+  setRefresh,
+  setUnreadNotificationCount,
+  setUnreadStatus,
+} from "../../redux/slices/response_slice";
 import { QUERY_APP } from "../../service/app_setting_service";
+import { getUnreadIndieNotificationInboxCount } from "native-notify";
 
 export const useGetProducts = () => {
   const dispatch = useDispatch();
@@ -45,6 +52,7 @@ export const useGetTopProducts = () => {
             ...doc.data(),
           });
         });
+
         dispatch(setTopProduct(collection));
       }
     );
@@ -66,6 +74,7 @@ export const useGetCurrentRequest = () => {
           limit(1)
         ),
         (snap) => {
+          dispatch(setRefresh());
           if (!snap.empty) {
             const collection = [];
             snap.forEach((doc) => {
@@ -75,6 +84,7 @@ export const useGetCurrentRequest = () => {
               });
             });
             dispatch(setCurrentRequest(collection[0]));
+            dispatch(setCounter());
           }
 
           if (snap.empty) {
@@ -120,4 +130,24 @@ export const useGetAppSetting = () => {
     return unSub;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+};
+
+export const useGetNotificationRedIcon = () => {
+  const { user } = useSelector((state) => state.user);
+  const { refresh } = useSelector((state) => state.response);
+  const dispatch = useDispatch();
+
+  const getUnreadNotification = async () => {
+    const unreadCount = await getUnreadIndieNotificationInboxCount(
+      user?.id,
+      2746,
+      "33W2w1mWUguk3y6DPPFDWL"
+    );
+
+    return unreadCount;
+  };
+
+  useEffect(async () => {
+    dispatch(setUnreadNotificationCount(await getUnreadNotification()));
+  }, [refresh]);
 };

@@ -1,9 +1,31 @@
 {
   "expo": {
-    "name": "dlw-project",
+    "name": "DLW APP",
     "slug": "dlw",
     "version": "1.0.0",
-    "assetBundlePatterns": ["**/*"]
+    "icon": "./assets/img/icon.png",
+    "assetBundlePatterns": ["**/*"],
+    "splash": {
+      "image": "./assets/img/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "android": {
+      "package": "com.dlw_app",
+      "googleServicesFile": "./google-services.json"
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./local/assets/img/notification-icon.png",
+          "color": "#ffffff"
+        }
+      ]
+    ]
   },
-  "name": "dlw-project"
+  "name": "dlw-project",
+  "android": {
+    "package": "com.dlw_app"
+  }
 }

@@ -16,6 +16,7 @@ import AcquireView from "../view/acquire_view";
 import StatusView from "../view/status_view";
 import {
   useGetCurrentRequest,
+  useGetNotificationRedIcon,
   useGetProducts,
   useGetTimer,
   useGetTopProducts,
@@ -61,6 +62,7 @@ const AppRoute = () => {
   useGetCurrentRequest();
   useGetTopProducts();
   useGetTimer();
+  useGetNotificationRedIcon();
 
   return (
     <React.Fragment>

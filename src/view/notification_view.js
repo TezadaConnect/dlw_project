@@ -1,18 +1,17 @@
-import { useNavigation } from "@react-navigation/native";
 import { Layout } from "@ui-kitten/components";
 import React, { useEffect, useState } from "react";
 import { NotificationCard } from "../components/notification_components";
 import { getIndieNotificationInbox } from "native-notify";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ScrollView } from "react-native-gesture-handler";
+import { setReadStatus } from "../redux/slices/response_slice";
 
 const NotificationView = () => {
   const [data, setData] = useState([]);
   const { user } = useSelector((state) => state.user);
-  const { refresh } = useSelector((state) => state.response);
-
+  const { unreadStatus, refresh } = useSelector((state) => state.response);
   const getNotify = async () => {
-    let notifications = await getIndieNotificationInbox(
+    const notifications = await getIndieNotificationInbox(
       user?.id,
       2746,
       "33W2w1mWUguk3y6DPPFDWL"
@@ -22,7 +21,7 @@ const NotificationView = () => {
 
   useEffect(() => {
     getNotify();
-  }, [refresh]);
+  }, [unreadStatus, refresh]);
 
   return (
     <Layout>
@@ -32,6 +31,7 @@ const NotificationView = () => {
             marginHorizontal: 10,
             display: "flex",
             flexDirection: "column",
+            marginBottom: 40,
           }}
         >
           {data?.map((element, key) => {

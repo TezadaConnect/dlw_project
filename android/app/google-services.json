@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "103837617836",
+    "firebase_url": "https://dlw-backend-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "dlw-backend",
+    "storage_bucket": "dlw-backend.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:103837617836:android:0a95f80931dc635249d909",
+        "android_client_info": {
+          "package_name": "com.dlw_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "103837617836-hcd0jdpfu4aaijrf3jadasedelgsap78.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1Z3C532Urrfn0jSR5n4YkC9qxOAD0vcI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "103837617836-hcd0jdpfu4aaijrf3jadasedelgsap78.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

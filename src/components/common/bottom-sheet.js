@@ -10,6 +10,7 @@ import { showMessage } from "react-native-flash-message";
 import { useGetTimer } from "../../helper/hooks/use_start_dep_hooks";
 import { setRefresh } from "../../redux/slices/response_slice";
 import RequestService from "../../service/request_service";
+import { setCounter } from "../../redux/slices/product_slice";
 
 const { height } = Dimensions.get("screen");
 const modalHeight = height * 0.5;
@@ -24,22 +25,11 @@ const setChangesForRemainingDate = (value) => {
   return title;
 };
 
-const PICKUP = [
-  "WAITING",
-  "PICKUP",
-  "REJECT",
-  "WASH",
-  "HANDWASH",
-  "DRY",
-  "IRON",
-  "FOLD",
-  "DELIVERY",
-  "DONE",
-];
-
 const BottomSheetComponent = ({ modalRef }) => {
-  const { currentRequest, time } = useSelector((state) => state.product);
-  const [counter, setCounter] = useState(0);
+  const { currentRequest, time, counter } = useSelector(
+    (state) => state.product
+  );
+
   const dispatch = useDispatch();
 
   const onClose = () => {
@@ -65,18 +55,7 @@ const BottomSheetComponent = ({ modalRef }) => {
 
   useEffect(() => {
     setTitle(setChangesForRemainingDate(counter));
-  }, [counter]);
-
-  useEffect(() => {
-    const stateOfItem = currentRequest?.status ?? null;
-    if (stateOfItem === PICKUP[0]) return setCounter(0);
-    if (stateOfItem === PICKUP[1]) return setCounter(1);
-    if (stateOfItem === PICKUP[8]) return setCounter(3);
-    if (stateOfItem === PICKUP[9]) return setCounter(4);
-    if (stateOfItem === PICKUP[2]) return setCounter(5);
-
-    return setCounter(2);
-  }, [currentRequest?.status ?? null]);
+  }, []);
 
   useGetTimer();
 
@@ -216,14 +195,7 @@ const BottomSheetComponent = ({ modalRef }) => {
             </Layout>
           )}
 
-          <Button
-            onPress={() => {
-              onClose();
-              setCounter(0);
-            }}
-          >
-            Close
-          </Button>
+          <Button onPress={() => onClose()}>Close</Button>
         </Layout>
       </Modalize>
     </Portal>

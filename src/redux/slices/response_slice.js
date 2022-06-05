@@ -6,6 +6,9 @@ export const responseSlice = createSlice({
     loading: false,
     refresh: true,
     project: null,
+    unreadNotificationCount: 0,
+    unreadStatus: false,
+    readStatus: false,
   },
 
   reducers: {
@@ -18,8 +21,24 @@ export const responseSlice = createSlice({
     setProject: (state, action) => {
       state.project = action.payload;
     },
+    setUnreadNotificationCount: (state, action) => {
+      state.unreadNotificationCount = action.payload;
+    },
+    setUnreadStatus: (state) => {
+      state.unreadStatus = !state.unreadStatus;
+    },
+    setReadStatus: (state, action) => {
+      state.readStatus = action.payload;
+    },
   },
 });
 
-export const { setBusy, setRefresh, setProject } = responseSlice.actions;
+export const {
+  setBusy,
+  setRefresh,
+  setProject,
+  setUnreadNotificationCount,
+  setUnreadStatus,
+  setReadStatus,
+} = responseSlice.actions;
 export default responseSlice.reducer;
