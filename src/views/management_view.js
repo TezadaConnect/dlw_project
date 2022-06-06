@@ -36,7 +36,7 @@ const sidebarItems = [
 ];
 
 const ManagementView = () => {
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(3);
 
   const { user } = useSelector((state) => state.user);
 
@@ -54,9 +54,9 @@ const ManagementView = () => {
         <div className="flex-grow">
           <NavbarComponent title="MANAGEMENT" />
           <div className="mt-5 mx-5">
+            {page === 3 && <ProductServices />}
             {page === 1 && <CashFlowDisplay />}
             {page === 2 && <DisplayReport />}
-            {page === 3 && <ProductServices />}
           </div>
         </div>
       </div>
